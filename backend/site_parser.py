@@ -6,6 +6,8 @@ from models import *
 from bs4 import BeautifulSoup
 import requests
 import pandas as pd
+import re
+
 
 INIT_DATA_NAME = "init_data.xlsx"
 
@@ -13,7 +15,7 @@ def parse_sites():
     sites = mongo.get_sites()
     items = mongo.get_items()
     for item in items:
-        page = requests.get(item.item_link)
+        page = requests.get(item.item_link,  verify=False)
         soup = BeautifulSoup(page.text, "html.parser")
         quant_kwargs = {}
         price_kwargs = {}
@@ -32,7 +34,7 @@ def parse_sites():
 
         price_target = soup.find(**price_kwargs)
         if price_target != None:
-            price = int(price_target.text.replace(" ", ""))
+            price = int(re.sub('[^0-9]','', price_target.text))
 
         parse_data = ParseData(quantity=quantity, price=price)
         mongo.add_data_to_item(item.pk, parse_data)

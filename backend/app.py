@@ -1,11 +1,14 @@
 from flask import Flask, request
 from flask_apscheduler import APScheduler
+from flask_cors import CORS
+
 from models import *
 import site_parser
 import mongo
 import json
 
 app = Flask(__name__)
+CORS(app)
 
 scheduler = APScheduler()
 
@@ -16,7 +19,7 @@ def scheduleTask():
 
 
 scheduler.add_job(id = 'Scheduled Task', func=scheduleTask, trigger="interval", hours=1)
-scheduler.start()
+
 
 @app.route('/get_items', methods=['GET'])
 def get_items():
@@ -56,6 +59,6 @@ def init_data():
     site_parser.export_from_xlsx()
     return 'Hello, World!'
 
-
-if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000)
+# if __name__ == '__main__':
+scheduler.start()
+app.run(host="0.0.0.0", port=5000)
