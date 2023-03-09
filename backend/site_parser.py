@@ -7,6 +7,8 @@ from bs4 import BeautifulSoup
 import requests
 import pandas as pd
 
+INIT_DATA_NAME = "init_data.xlsx"
+
 def parse_sites():
     sites = mongo.get_sites()
     items = mongo.get_items()
@@ -36,12 +38,14 @@ def parse_sites():
         mongo.add_data_to_item(item.pk, parse_data)
 
 def export_from_xlsx():
-    dataframe = pd.read_excel('init_data.xlsx')
-    names = dataframe['Name'].values
-    links = dataframe['Link'].values
-    for i in range(len(names)):
-        new_item = Item(
-            name = names[i],
-            item_link = links[i]
-        )
-        mongo.add_item(new_item)
+    xl = pd.ExcelFile(INIT_DATA_NAME)
+    for i in range(2):
+        dataframe = pd.read_excel(INIT_DATA_NAME, sheet_name=xl.sheet_names[i])
+        names = dataframe['Name'].values
+        links = dataframe['Link'].values
+        for i in range(len(names)):
+            new_item = Item(
+                name = names[i],
+                item_link = links[i]
+            )
+            mongo.add_item(new_item)
