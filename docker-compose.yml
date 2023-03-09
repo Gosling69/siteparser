@@ -1,0 +1,23 @@
+version: "3.7"
+services:
+  mongo:
+    image: "mongo"
+    volumes:
+      - ./mongodb:/data/db
+    ports:
+      - "27017:27017"
+    restart: always
+    # command: "--bind_ip_all --replSet rs0"
+  api:
+    build: 
+        context: ./backend
+        dockerfile: Dockerfile
+    # command: flask run
+    ports:
+        - "5000:5000"
+    # environment:
+    #     MONGODB_HOST: mongodb
+    #     MONGODB_USERNAME: "apiuser"
+    #     MONGODB_PASSWORD: "apipassword"
+    depends_on: 
+        - mongo
