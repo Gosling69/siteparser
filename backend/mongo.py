@@ -60,9 +60,20 @@ def update_item(entry: Item ) -> dict:
 def link_items(enemy_item: Item, our_item: Item) -> dict:
     return {}
 
-def get_items() -> list:
-    connect('test',host=MONGO_HOST, port=MONGO_PORT)
+def get_items(init_date: str = '', end_date: str = '') -> list:
+    connect('test', host=MONGO_HOST, port=MONGO_PORT)
+
+    # if (init_date is None or end_date  None):
+    #     result = Item.objects().all()
+    # else:
+    #     pipeline = [
+    #         {"date_time": { "$gt" : f"{init_date}" }, "date_time": { "$lt" : f"{end_date}" } }
+    #     ]
+    #     result = Item.objects().aggregate(pipeline)
+
     result = Item.objects().all()
+
+
     disconnect('test')
     return result
 

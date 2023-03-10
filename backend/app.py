@@ -23,8 +23,13 @@ scheduler.add_job(id = 'Scheduled Task', func=scheduleTask, trigger="interval", 
 
 @app.route('/get_items', methods=['GET'])
 def get_items():
-    items = mongo.get_items()
+    init_date = request.args.get('init_date')
+    end_date = request.args.get('end_date')
+
+    items = mongo.get_items(init_date, end_date)
+
     return items.to_json()
+
 
 @app.route('/add_site', methods=['POST'])
 def add_site():
