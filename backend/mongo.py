@@ -2,6 +2,8 @@ from mongoengine import *
 from models import *
 from urllib.parse import urlsplit
 
+import json
+
 MONGO_HOST = "mongo"
 MONGO_PORT = 27017
 
@@ -63,15 +65,14 @@ def link_items(enemy_item: Item, our_item: Item) -> dict:
 def get_items(init_date: str = '', end_date: str = '') -> list:
     connect('test', host=MONGO_HOST, port=MONGO_PORT)
 
-    # if (init_date is None or end_date  None):
-    #     result = Item.objects().all()
-    # else:
-    #     pipeline = [
-    #         {"date_time": { "$gt" : f"{init_date}" }, "date_time": { "$lt" : f"{end_date}" } }
-    #     ]
-    #     result = Item.objects().aggregate(pipeline)
+    if ((init_date is None) or (end_date is None)):
+        result = Item.objects().all()
+    else:
+        pipeline = { "data" : { "$elemMatch" : { "$and" : [ { "date_time" : { "$gte" : f"ISODate(\"{init_date}\")" } }, { "date_time" : { "$lte" : f"ISODate(\"{end_date}\")" } } ] } } }
+              
+        result = Item.objects(__raw__ = pipeline)
 
-    result = Item.objects().all()
+        print(pipeline, init_date, end_date, result)
 
 
     disconnect('test')
