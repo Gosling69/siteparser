@@ -2,7 +2,8 @@ from mongoengine import *
 from models import *
 from urllib.parse import urlsplit
 
-import json
+from bson.json_util import dumps
+from datetime import datetime
 
 MONGO_HOST = "mongo"
 MONGO_PORT = 27017
@@ -65,15 +66,107 @@ def link_items(enemy_item: Item, our_item: Item) -> dict:
 def get_items(init_date: str = '', end_date: str = '') -> list:
     connect('test', host=MONGO_HOST, port=MONGO_PORT)
 
-    if ((init_date is None) or (end_date is None)):
-        result = Item.objects().all()
+    #if init_date and end_date empty
+    if init_date is None and end_date is None:
+        result = Item.objects().all().to_json()
+
+    #if only given end_date
+    elif init_date is None:
+        pipeline = [
+        {
+            u"$match": {}
+        }, 
+        {
+            u"$project": {
+                u"_id": 0.0,
+                u"name": u"$name",
+                u"item_link": u"$item_link",
+                u"site": u"$site",
+                u"data": {
+                    u"$filter": {
+                        u"input": u"$data",
+                        u"as": u"data",
+                        u"cond": {
+                            u"$lte": [
+                                u"$$data.date_time",
+                                datetime.strptime(f"{end_date}", "%Y-%m-%d")
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+        ]
+        result = dumps(Item.objects().aggregate(pipeline))
+
+    #if only given init_date
+    elif end_date is None:
+        pipeline = [
+        {
+            u"$match": {}
+        }, 
+        {
+            u"$project": {
+                u"_id": 0.0,
+                u"name": u"$name",
+                u"item_link": u"$item_link",
+                u"site": u"$site",
+                u"data": {
+                    u"$filter": {
+                        u"input": u"$data",
+                        u"as": u"data",
+                        u"cond": {
+                            u"$gte": [
+                                u"$$data.date_time",
+                                datetime.strptime(f"{init_date}", "%Y-%m-%d")
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+        ]
+        result = dumps(Item.objects().aggregate(pipeline))
+
+    #if given init_date and end_date
     else:
-        pipeline = { "data" : { "$elemMatch" : { "$and" : [ { "date_time" : { "$gte" : f"ISODate(\"{init_date}\")" } }, { "date_time" : { "$lte" : f"ISODate(\"{end_date}\")" } } ] } } }
-              
-        result = Item.objects(__raw__ = pipeline)
-
-        print(pipeline, init_date, end_date, result)
-
+        pipeline = [
+        {
+            u"$match": {}
+        }, 
+        {
+            u"$project": {
+                u"_id": 0.0,
+                u"name": u"$name",
+                u"item_link": u"$item_link",
+                u"site": u"$site",
+                u"data": {
+                    u"$filter": {
+                        u"input": u"$data",
+                        u"as": u"data",
+                        u"cond": {
+                            u"$and": [
+                                {
+                                    u"$gte": [
+                                        u"$$data.date_time",
+                                        datetime.strptime(f"{init_date}", "%Y-%m-%d")
+                                    ]
+                                },
+                                {
+                                    u"$lte": [
+                                        u"$$data.date_time",
+                                        datetime.strptime(f"{end_date}", "%Y-%m-%d")
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                },
+                u"_id": 0.0
+            }
+        }
+        ]
+        result = dumps(Item.objects().aggregate(pipeline))
 
     disconnect('test')
     return result

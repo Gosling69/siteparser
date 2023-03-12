@@ -28,7 +28,7 @@ def get_items():
 
     items = mongo.get_items(init_date, end_date)
 
-    return items.to_json()
+    return items
 
 
 @app.route('/add_site', methods=['POST'])
