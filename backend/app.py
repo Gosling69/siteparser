@@ -15,15 +15,18 @@ scheduler = APScheduler()
 def scheduleTask():
     print("PARSING SITES")
     site_parser.parse_sites()
+    site_parser.update_our_items()
     print("DONE")
 
 
 scheduler.add_job(id = 'Scheduled Task', func=scheduleTask, trigger="interval", hours=1)
+scheduler.start()
 
 
-@app.route('/get_items', methods=['GET'])
-def get_items():
-    items = mongo.get_items()
+
+@app.route('/get_sites', methods=['GET'])
+def get_sites():
+    items = mongo.get_sites()
     return items.to_json()
 
 @app.route('/add_site', methods=['POST'])
@@ -32,6 +35,23 @@ def add_site():
     new_site = Site.from_json(json_data=json.dumps(raw_site))
     mongo.add_site(new_site)
     return 'Hello, World!'
+
+@app.route('/update_site', methods=['PUT'])
+def update_site():
+    raw_site = request.json["site"]
+    mongo.update_site(raw_site)
+    return 'Hello, World!'
+
+@app.route('/get_items', methods=['GET'])
+def get_items():
+    items = mongo.get_items()
+    return items.to_json()
+
+@app.route('/get_our_items', methods=['GET'])
+def get_our_items():
+    items = mongo.get_our_items_with_linked()
+    return items
+
 
 @app.route('/add_item', methods=['POST'])
 def add_item_to_site():
@@ -48,10 +68,18 @@ def add_data_to_item():
     mongo.add_data_to_item(raw_id, new_data)
     return 'Hello, World!'
 
-@app.route('/update_site', methods=['PUT'])
-def update_site():
-    raw_site = request.json["site"]
-    mongo.update_site(raw_site)
+@app.route('/add_our_item', methods=['POST'])
+def add_our_item():
+    raw_item = request.json["ouritem"]
+    new_item = OurItem.from_json(json_data=json.dumps(raw_item))
+    mongo.add_item(new_item)    
+    return 'Hello, World!'
+
+@app.route('/link_item', methods=['PUT'])
+def link_item():
+    our_item_id = request.json["our_item_id"]
+    enemy_item_id = request.json["enemy_item_id"]
+    mongo.link_items(enemy_item_id, our_item_id)    
     return 'Hello, World!'
 
 @app.route('/init_data', methods=['PUT'])
@@ -60,5 +88,4 @@ def init_data():
     return 'Hello, World!'
 
 # if __name__ == '__main__':
-scheduler.start()
 app.run(host="0.0.0.0", port=5000)

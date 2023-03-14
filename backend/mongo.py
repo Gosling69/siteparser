@@ -1,13 +1,14 @@
 from mongoengine import *
 from models import *
 from urllib.parse import urlsplit
+from typing import Union
 
 MONGO_HOST = "mongo"
 MONGO_PORT = 27017
 
-def get_sites() -> list:
+def get_sites(query:dict={}) -> list:
     connect('test',host=MONGO_HOST, port=MONGO_PORT)
-    result = Site.objects().all()
+    result = Site.objects(**query)
     disconnect('test')
     return result
 
@@ -28,9 +29,9 @@ def update_site(entry: dict ) -> dict:
     disconnect('test')
     return {}
 
-def add_item(entry: Item) -> dict:
+def add_item(entry: Union[Item, OurItem]) -> dict:
     connect('test',host=MONGO_HOST, port=MONGO_PORT)
-    item_exists = Item.objects(item_link=entry.item_link).count() != 0
+    item_exists = entry.__class__.objects(item_link=entry.item_link).count() != 0
     if item_exists:
         print("ALREADY EXISTS")
         return {}
@@ -48,21 +49,97 @@ def add_item(entry: Item) -> dict:
     disconnect('test')
     return {}
 
-def add_data_to_item(item_id:str, parse_data: ParseData) -> dict:
+def link_items(enemy_item_id: str, our_item_id: str) -> dict:
     connect('test',host=MONGO_HOST, port=MONGO_PORT)
-    Item.objects(pk=item_id).update_one(push__data=parse_data)
+    enemy_item = Item.objects(pk=enemy_item_id).get()
+    if enemy_item == None:
+        print("ENEMY ITEM NOT FOUND")
+        return {}
+    OurItem.objects(pk=our_item_id).update_one(push__linked_items=enemy_item)
     disconnect('test')
     return {}
 
-def update_item(entry: Item ) -> dict:
+def add_data_to_item(item_id:str, parse_data: ParseData) -> dict:
+    connect('test',host=MONGO_HOST, port=MONGO_PORT)
+    Item.objects(pk=item_id).update_one(
+        push__data=parse_data, 
+        set__last_price=parse_data.price, 
+        set__last_quantity=parse_data.quantity
+    )
+    disconnect('test')         
     return {}
 
-def link_items(enemy_item: Item, our_item: Item) -> dict:
-    return {}
+def update_our_item(item_id: str, update_dict:dict) -> dict:
+    connect('test',host=MONGO_HOST, port=MONGO_PORT)
+    target_item = OurItem.objects(pk=item_id)
+    if target_item.count() > 0:
+        target_item.update(**update_dict)
+    disconnect('test')
+
+# def update_item(entry: Union[Item, OurItem] ) -> dict:
+#     connect('test',host=MONGO_HOST, port=MONGO_PORT)
+#     target_item = entry.__class__.objects(item_link=entry['item_link'])
+#     if target_item.count() > 0:
+#         update_dict = {}
+#         for key in entry:
+#             if key not in ["data","item_link"]:
+#                 update_dict[f"set__{key}"] = entry[key]
+#         target_item.update(**update_dict)
+#     disconnect('test')
+#     return {}
+
 
 def get_items() -> list:
     connect('test',host=MONGO_HOST, port=MONGO_PORT)
     result = Item.objects().all()
     disconnect('test')
     return result
+def get_our_items() -> list:
+    connect('test',host=MONGO_HOST, port=MONGO_PORT)
+    result = OurItem.objects().all()
+    disconnect('test')
+    return result
+    
+def get_our_items_with_linked() -> list:
+    connect('test',host=MONGO_HOST, port=MONGO_PORT)
+    our_items = OurItem.objects().aggregate([
+        { 
+            "$lookup": {
+            "from": "item",
+            "let": {
+                "linked_items": "$linked_items"
+            },
+            "pipeline": [
+                {
+                "$match": {
+                    "$expr": {
+                    "$in": [
+                        "$_id",
+                        "$$linked_items"
+                    ]
+                    }
+                }
+                }
+            ],
+            "as": "linked_items"
+            }
+        },
+        {
+            "$project": {
+            "_id": 1,
+            "name": 1,
+            "item_link": 1,
+            "last_price": 1,
+            "linked_items.name": 1,
+            "linked_items.last_price": 1,
+            "linked_items.item_link": 1
+            }
+        }
 
+    ])
+    result = []
+    for item in our_items:
+        item['_id'] = {"$oid":item['_id'].__str__()}  
+        result.append(item)
+    disconnect('test')
+    return result

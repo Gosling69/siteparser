@@ -2,7 +2,7 @@
 const AdminPage = (props) => {
 
     return(
-        <>PIZDA</>
+        <>ADMIN</>
     )
 
 }
