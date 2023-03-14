@@ -26,7 +26,17 @@ class Item(Document):
     name = StringField()
     item_link = URLField()
     site = ReferenceField(Site)
-    linked_item = ObjectIdField()
+    last_price = IntField()
+    last_quantity = IntField()
+    data = EmbeddedDocumentListField(ParseData)
+
+class OurItem(Document):
+    name = StringField()
+    item_link = URLField()
+    site = ReferenceField(Site)
+    last_price = IntField()
+    last_quantity = IntField()
+    linked_items = ListField(ReferenceField(Item))
     data = EmbeddedDocumentListField(ParseData)
 
 

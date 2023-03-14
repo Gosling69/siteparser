@@ -4,6 +4,7 @@ import DataGrid,
 {
   Column,
   MasterDetail,
+  Scrolling
 } from 'devextreme-react/data-grid';
 import DetailComponent from "../../Components/DetailComponent";
 
@@ -25,9 +26,11 @@ const HomePage = (props) => {
                 dataSource={items}
                 keyExpr="_id"
                 showBorders={true}
+                height={800}
             >
             <Column dataField="name"/>
             <Column dataField="item_link" />
+            <Scrolling mode="virtual" />
             <MasterDetail
                 enabled={true}
                 component={DetailComponent}

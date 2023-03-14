@@ -9,15 +9,23 @@ import {
 
 import HomePage from './Pages/Home';
 import AdminPage from './Pages/Admin';
+import NavBar from './Components/NavBar';
+import PriceCompare from './Pages/PriceCompare';
+import QuantityCompare from './Pages/QuantityCompare';
 
 function App() {
   return (
+    <>
+    <NavBar/>
     <BrowserRouter>
       <Routes>
-          <Route path="/admin" element={<AdminPage />}/>
           <Route path="/" element={<HomePage />}/>
+          <Route path="/price_compare" element={<PriceCompare />}/>
+          <Route path="/quantity_compare" element={<QuantityCompare />}/>
+          <Route path="/admin" element={<AdminPage />}/>
         </Routes>
       </BrowserRouter>
+      </>
   );
 }
 

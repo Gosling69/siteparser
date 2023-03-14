@@ -8,6 +8,19 @@ export default class ApiService {
         let response = await axios.get(ApiService.endpoint + "/get_items")
         return response.data
     }
+    static async getOurItems(){
+        let response = await axios.get(ApiService.endpoint + "/get_our_items")
+        return response.data
+    }
+
+    static async linkItems(body){
+        let response = await axios.put(ApiService.endpoint + "/link_item", body)
+        return response.status
+    }
+    static async runUpdate(){
+        let response = await axios.post(ApiService.endpoint + "/run_update")
+        return response
+    }
     static async updateItem() {
         
     }
