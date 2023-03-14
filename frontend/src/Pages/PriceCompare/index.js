@@ -26,7 +26,7 @@ import StoreCard from "../../Components/StoreCard"
                     {items.map((el, index) =>
                     {
                         let prices = el.linked_items.map(el => el.last_price)
-                        let color = prices.some((elem) => elem > el.last_price)? "green":"red"
+                        let color = !prices.length? "black" : prices.some((elem) => elem > el.last_price) ? "#198754":"#DC3545"
                         // let prices = new Set(el.linked_items.map(el => el.last_price))
                         // console.log(priceSet)
 
@@ -34,7 +34,8 @@ import StoreCard from "../../Components/StoreCard"
                             <Nav.Item>
                                 <Nav.Link 
                                     // style={{"backgroundColor": el.last_price > el.linked_items}} 
-                                    style={{"backgroundColor":color}}
+                                    // variant={"success"}
+                                    style={{"backgroundColor":"white", "color":color}}
                                     eventKey={index}
                                 >
                                     {`${el.name} - ${el.last_price}`}

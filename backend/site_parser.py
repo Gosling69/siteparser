@@ -39,7 +39,6 @@ def parse_sites():
 
         parse_data = ParseData(quantity=quantity, price=price)
         mongo.add_data_to_item(item.pk, parse_data)
-parse_sites()
 
 def update_our_items():
     our_items = mongo.get_our_items()
@@ -58,7 +57,8 @@ def update_our_items():
         if price_target != None:
             price = int(re.sub('[^0-9]','', price_target.text))
         mongo.update_our_item(item.pk, {"set__last_price":price})
-
+parse_sites()
+update_our_items()
 def export_from_xlsx():
     xl = pd.ExcelFile(INIT_DATA_NAME)
     for i in range(2):

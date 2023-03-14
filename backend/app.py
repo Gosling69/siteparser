@@ -22,7 +22,10 @@ def scheduleTask():
 scheduler.add_job(id = 'Scheduled Task', func=scheduleTask, trigger="interval", hours=1)
 scheduler.start()
 
-
+@app.route('/run_update', methods=['POST'])
+def run_update():
+    scheduleTask()
+    return "SAS"
 
 @app.route('/get_sites', methods=['GET'])
 def get_sites():

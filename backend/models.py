@@ -36,7 +36,7 @@ class OurItem(Document):
     site = ReferenceField(Site)
     last_price = IntField()
     last_quantity = IntField()
-    linked_items = ListField(ReferenceField(Item, dbref=True))
+    linked_items = ListField(ReferenceField(Item))
     data = EmbeddedDocumentListField(ParseData)
 
 
