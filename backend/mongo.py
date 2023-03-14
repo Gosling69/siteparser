@@ -51,58 +51,7 @@ def add_item(entry: Union[Item, OurItem]) -> dict:
     entry.save()
     disconnect('test')
     return {}
-# items = {
-#     "Сетка 0,5 к":"https://www.xn--38-vlcai5ag2d.xn--p1ai/goods/46743538-setka_2_0_kladochnaya_1_5_kh_0_48",
-#     "Сетка п блок":"https://www.xn--38-vlcai5ag2d.xn--p1ai/goods/46743539-setka_2_5_kladochnaya_1_5_kh_0_64",
-#     "Сетка 1 к":"https://www.xn--38-vlcai5ag2d.xn--p1ai/goods/46743536-setka_1_0_kladochnaya_1_5_kh_0_24",
-#     "Сетка 1,5 к" :"https://www.xn--38-vlcai5ag2d.xn--p1ai/goods/46743537-setka_1_5_kladochnaya_1_5_kh_0_38",
-#     "Сетка 1*3*0,15":"https://www.xn--38-vlcai5ag2d.xn--p1ai/goods/46743534-setka_1_kh_3_kh_0_15",
-#     "Сетка 1*3*0,2":"https://www.xn--38-vlcai5ag2d.xn--p1ai/goods/46743535-setka_1_kh_3_kh_0_20",
-#     "Сетка 1*3*0,1":"https://www.xn--38-vlcai5ag2d.xn--p1ai/goods/46743533-setka_1_kh_3_kh_0_10",
-#     "Керамзит 10/20":"https://www.xn--38-vlcai5ag2d.xn--p1ai/goods/239962051-keramzit_10_20_40_l_mesh",
-#     "Керамзит 5/10":"https://www.xn--38-vlcai5ag2d.xn--p1ai/goods/240114612-keramzit_0_10_mm_900_l_mkr",
-#     "Теплит лайт":"https://www.xn--38-vlcai5ag2d.xn--p1ai/goods/39635984-uteplitel_teplit_pte_50_3_m_2_tolshchina_50_mm",
-#     "Теплит 50":"https://www.xn--38-vlcai5ag2d.xn--p1ai/goods/46743524-uteplitel_teplit_50_3_m2",
-#     "Теплит 75":"https://www.xn--38-vlcai5ag2d.xn--p1ai/goods/46743523-uteplitel_teplit_75_3_m2",
-#     "Пеноплекс 50" :"https://www.xn--38-vlcai5ag2d.xn--p1ai/goods/188320861-extrudirovanny_penopolistirol_penoplex_50_mm_4_8526_m2_585kh1185_mm",
-#     "Пеноплекс 30" :"https://www.xn--38-vlcai5ag2d.xn--p1ai/goods/46743528-extruzionny_penopolisterol_30mm_9_8m2",
-#     "Двп 3,2 1,7*2,75":"https://www.xn--38-vlcai5ag2d.xn--p1ai/goods/46743521-osp_9_mm_122_kh_244",
-
-# }
-# enemy_items = {
-#     "Сетка 0,5 к":"https://xn--80afpacjdwcqkhfi.xn--p1ai/catalog/kladochnaya-setka/setka-kladochnaya-0-12kh1-5-m/",
-#     "Сетка п блок":"https://xn--80afpacjdwcqkhfi.xn--p1ai/catalog/kladochnaya-setka/setka-kladochnaya-0-18kh1-5-m/",
-#     "Сетка 1 к":"https://xn--80afpacjdwcqkhfi.xn--p1ai/catalog/kladochnaya-setka/setka-kladochnaya-0-24kh1-5-m/",
-#     "Сетка 1,5 к" :"https://xn--80afpacjdwcqkhfi.xn--p1ai/catalog/kladochnaya-setka/setka-kladochnaya-0-38kh1-5-m/",
-#     "Сетка 1*3*0,15":"https://xn--80afpacjdwcqkhfi.xn--p1ai/catalog/kladochnaya-setka/setka-kladochnaya-1kh3-m-15kh15-10-otkrytyy-kontur/",
-#     "Сетка 1*3*0,2":"https://xn--80afpacjdwcqkhfi.xn--p1ai/catalog/kladochnaya-setka/setka-kladochnaya-1kh3-m-20kh20-10-otkrytyy-kontur/",
-#     "Сетка 1*3*0,1":"https://xn--80afpacjdwcqkhfi.xn--p1ai/catalog/kladochnaya-setka/setka-kladochnaya-1kh3-m-10kh10-10-otkrytyy-kontur/",
-#     "Керамзит 10/20":"https://xn--80afpacjdwcqkhfi.xn--p1ai/catalog/keramzit_1/keramzit-fraktsiya-10-20-mm_1/",
-#     "Керамзит 5/10":"https://xn--80afpacjdwcqkhfi.xn--p1ai/catalog/keramzit_1/keramzit-fraktsiya-5-10-mm_1/",
-#     "Теплит лайт":"https://xn--80afpacjdwcqkhfi.xn--p1ai/catalog/bazalt-minplita/min-plita-teplit-layt-super-pl-27kg-m3-1000kh500kh50-6-plit-3m2-0-15m3-t-u/",
-#     "Теплит 50":"https://xn--80afpacjdwcqkhfi.xn--p1ai/catalog/bazalt-minplita/min-plita-teplit-blok-standart-pl-45kg-m3-1000kh500kh50-6-plit-3m2-0-15m3-t-u/",
-#     "Теплит 75":"https://xn--80afpacjdwcqkhfi.xn--p1ai/catalog/bazalt-minplita/min-plita-p-75-teplit-1000kh500kh50-6-plit-3m2-0-15m3-t-u/",
-#     "Пеноплекс 30" :"https://xn--80afpacjdwcqkhfi.xn--p1ai/catalog/ekstruziya-xps/penopolistirol-penopleks-komfort-50-mm/",
-#     "Двп 3,2 1,7*2,75":"https://xn--80afpacjdwcqkhfi.xn--p1ai/catalog/ekstruziya-xps/plity-penopleks-komfort-30kh585kh1185-t-15-13-sht-0-2704-m3-s-16-07-2018/",
-#     "Пеноплекс 50" :"https://xn--80afpacjdwcqkhfi.xn--p1ai/catalog/dvp/dvp-3-4kh1700kh2745-168-lesosibirsk/",
-
-# }
-# def run_add():
-#     for name in items:
-#         new_item = OurItem(
-#             name=name,
-#             item_link=items[name]
-#         )
-#         add_item(new_item)
-# run_add()
-# def run_add_enemy():
-#     for name in enemy_items:
-#         new_item = Item(
-#             name=name,
-#             item_link=enemy_items[name]
-#         )
-#         add_item(new_item)
-# run_add_enemy()
+    
 def link_items(enemy_item_id: str, our_item_id: str) -> dict:
     connect('test',host=MONGO_HOST, port=MONGO_PORT)
     enemy_item = Item.objects(pk=enemy_item_id).get()

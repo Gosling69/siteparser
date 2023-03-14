@@ -31,7 +31,7 @@ def run_update():
 def get_items():
     init_date = request.args.get('init_date')
     end_date = request.args.get('end_date')
-
+    print(init_date, end_date)
     items = mongo.get_items(init_date, end_date)
 
     return items
@@ -49,11 +49,6 @@ def update_site():
     raw_site = request.json["site"]
     mongo.update_site(raw_site)
     return 'Hello, World!'
-
-@app.route('/get_items', methods=['GET'])
-def get_items():
-    items = mongo.get_items()
-    return items.to_json()
 
 @app.route('/get_our_items', methods=['GET'])
 def get_our_items():
