@@ -9,31 +9,40 @@ from datetime import datetime
 MONGO_HOST = "mongo"
 MONGO_PORT = 27017
 
+#decorator to connect and disconnect from database
+def database_connector(func):
+    def wrapper_database_connector(*args, **kwargs):
+        connect('test', host=MONGO_HOST, port=MONGO_PORT)
+        result = func(*args, **kwargs)
+        disconnect('test')
+        return result
+    return wrapper_database_connector
+
+
+@database_connector
 def get_sites(query:dict={}) -> list:
-    connect('test',host=MONGO_HOST, port=MONGO_PORT)
     result = Site.objects(**query)
-    disconnect('test')
     return result
 
+
+@database_connector
 def add_site(site: Site ) -> dict:
-    connect('test',host=MONGO_HOST, port=MONGO_PORT)
     site.save()
-    disconnect('test')
     return {}
 
+
+@database_connector
 def update_site(entry: dict ) -> dict:
-    connect('test',host=MONGO_HOST, port=MONGO_PORT)
     target_site = Site.objects(url=entry['url'])
     if target_site.count() > 0:
         update_dict = {}
         for key in entry:
             update_dict[f"set__{key}"] = entry[key]
         target_site.update(**update_dict)
-    disconnect('test')
     return {}
 
+@database_connector
 def add_item(entry: Union[Item, OurItem]) -> dict:
-    connect('test',host=MONGO_HOST, port=MONGO_PORT)
     item_exists = entry.__class__.objects(item_link=entry.item_link).count() != 0
     if item_exists:
         print("ALREADY EXISTS")
@@ -49,35 +58,33 @@ def add_item(entry: Union[Item, OurItem]) -> dict:
         new_site.save()
     entry.site = Site.objects.get(url=url)
     entry.save()
-    disconnect('test')
     return {}
-    
+
+
+@database_connector
 def link_items(enemy_item_id: str, our_item_id: str) -> dict:
-    connect('test',host=MONGO_HOST, port=MONGO_PORT)
     enemy_item = Item.objects(pk=enemy_item_id).get()
     if enemy_item == None:
         print("ENEMY ITEM NOT FOUND")
         return {}
     OurItem.objects(pk=our_item_id).update_one(push__linked_items=enemy_item)
-    disconnect('test')
     return {}
 
+@database_connector
 def add_data_to_item(item_id:str, parse_data: ParseData) -> dict:
-    connect('test',host=MONGO_HOST, port=MONGO_PORT)
     Item.objects(pk=item_id).update_one(
         push__data=parse_data, 
         set__last_price=parse_data.price, 
         set__last_quantity=parse_data.quantity
-    )
-    disconnect('test')         
+    )      
     return {}
 
+
+@database_connector
 def update_our_item(item_id: str, update_dict:dict) -> dict:
-    connect('test',host=MONGO_HOST, port=MONGO_PORT)
     target_item = OurItem.objects(pk=item_id)
     if target_item.count() > 0:
         target_item.update(**update_dict)
-    disconnect('test')
 
 # def update_item(entry: Union[Item, OurItem] ) -> dict:
 #     connect('test',host=MONGO_HOST, port=MONGO_PORT)
@@ -92,13 +99,11 @@ def update_our_item(item_id: str, update_dict:dict) -> dict:
 #     return {}
 
 
+@database_connector
 def get_items(init_date: str = None, end_date: str = None) -> list:
-    connect('test', host=MONGO_HOST, port=MONGO_PORT)
-
     #if init_date and end_date empty
     if init_date is None and end_date is None:
         result = Item.objects().all()
-        disconnect('test')
         return result.to_json()
 
 
@@ -200,18 +205,18 @@ def get_items(init_date: str = None, end_date: str = None) -> list:
     
         result = dumps(Item.objects().aggregate(pipeline))
     except ValueError:
-        disconnect('test')
         return "ERROR: Wrong type of arguments \"init_date\" or \"end_date\""
-    disconnect('test')
     return result
+
+
+@database_connector
 def get_our_items() -> list:
-    connect('test',host=MONGO_HOST, port=MONGO_PORT)
     result = OurItem.objects().all()
-    disconnect('test')
     return result
     
+
+@database_connector
 def get_our_items_with_linked() -> list:
-    connect('test',host=MONGO_HOST, port=MONGO_PORT)
     our_items = OurItem.objects().aggregate([
         { 
             "$lookup": {
@@ -251,5 +256,4 @@ def get_our_items_with_linked() -> list:
     for item in our_items:
         item['_id'] = {"$oid":item['_id'].__str__()}  
         result.append(item)
-    disconnect('test')
     return result
