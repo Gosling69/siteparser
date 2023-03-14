@@ -27,10 +27,15 @@ def run_update():
     scheduleTask()
     return "SAS"
 
-@app.route('/get_sites', methods=['GET'])
-def get_sites():
-    items = mongo.get_sites()
-    return items.to_json()
+@app.route('/get_items', methods=['GET'])
+def get_items():
+    init_date = request.args.get('init_date')
+    end_date = request.args.get('end_date')
+
+    items = mongo.get_items(init_date, end_date)
+
+    return items
+
 
 @app.route('/add_site', methods=['POST'])
 def add_site():

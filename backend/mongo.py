@@ -3,6 +3,9 @@ from models import *
 from urllib.parse import urlsplit
 from typing import Union
 
+from bson.json_util import dumps
+from datetime import datetime
+
 MONGO_HOST = "mongo"
 MONGO_PORT = 27017
 
@@ -140,9 +143,116 @@ def update_our_item(item_id: str, update_dict:dict) -> dict:
 #     return {}
 
 
-def get_items() -> list:
-    connect('test',host=MONGO_HOST, port=MONGO_PORT)
-    result = Item.objects().all()
+def get_items(init_date: str = None, end_date: str = None) -> list:
+    connect('test', host=MONGO_HOST, port=MONGO_PORT)
+
+    #if init_date and end_date empty
+    if init_date is None and end_date is None:
+        result = Item.objects().all()
+        disconnect('test')
+        return result.to_json()
+
+
+    try:
+        #if only given end_date
+        if init_date is None:
+            pipeline = [
+            {
+                u"$match": {}
+            }, 
+            {
+                u"$project": {
+                    u"_id": 0.0,
+                    u"name": u"$name",
+                    u"item_link": u"$item_link",
+                    u"site": u"$site",
+                    u"data": {
+                        u"$filter": {
+                            u"input": u"$data",
+                            u"as": u"data",
+                            u"cond": {
+                                u"$lte": [
+                                    u"$$data.date_time",
+                                    datetime.strptime(f"{end_date}", "%Y-%m-%d")
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+            ]
+
+        #if only given init_date
+        elif end_date is None:
+            pipeline = [
+            {
+                u"$match": {}
+            }, 
+            {
+                u"$project": {
+                    u"_id": 0.0,
+                    u"name": u"$name",
+                    u"item_link": u"$item_link",
+                    u"site": u"$site",
+                    u"data": {
+                        u"$filter": {
+                            u"input": u"$data",
+                            u"as": u"data",
+                            u"cond": {
+                                u"$gte": [
+                                    u"$$data.date_time",
+                                    datetime.strptime(f"{init_date}", "%Y-%m-%d")
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+            ]
+
+        #if given init_date and end_date
+        else:
+            pipeline = [
+            {
+                u"$match": {}
+            }, 
+            {
+                u"$project": {
+                    u"_id": 0.0,
+                    u"name": u"$name",
+                    u"item_link": u"$item_link",
+                    u"site": u"$site",
+                    u"data": {
+                        u"$filter": {
+                            u"input": u"$data",
+                            u"as": u"data",
+                            u"cond": {
+                                u"$and": [
+                                    {
+                                        u"$gte": [
+                                            u"$$data.date_time",
+                                            datetime.strptime(f"{init_date}", "%Y-%m-%d")
+                                        ]
+                                    },
+                                    {
+                                        u"$lte": [
+                                            u"$$data.date_time",
+                                            datetime.strptime(f"{end_date}", "%Y-%m-%d")
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    u"_id": 0.0
+                }
+            }
+            ]
+    
+        result = dumps(Item.objects().aggregate(pipeline))
+    except ValueError:
+        disconnect('test')
+        return "ERROR: Wrong type of arguments \"init_date\" or \"end_date\""
     disconnect('test')
     return result
 def get_our_items() -> list:
