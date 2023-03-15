@@ -16,7 +16,7 @@ const StoreCard = (props) => {
                 style={{ width: '18rem' }}
             >
 
-            <Card.Header>Header</Card.Header>
+            <Card.Header>{item.site?.name}</Card.Header>
             <Card.Body>
                 <Card.Title>{`${item.name} - ${item.last_price}`}</Card.Title>
                 <Card.Text>

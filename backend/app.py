@@ -35,7 +35,10 @@ def get_items():
     items = mongo.get_items(init_date, end_date)
 
     return items
-
+@app.route('/get_sites', methods=['GET'])
+def get_sites():
+    sites = mongo.get_sites()
+    return sites.to_json()
 
 @app.route('/add_site', methods=['POST'])
 def add_site():
@@ -54,7 +57,10 @@ def update_site():
 def get_our_items():
     items = mongo.get_our_items_with_linked()
     return items
-
+@app.route('/get_our_items_no_aggr', methods=['GET'])
+def get_our_items_no_aggr():
+    items = mongo.get_our_items()
+    return items.to_json()
 
 @app.route('/add_item', methods=['POST'])
 def add_item_to_site():
@@ -76,6 +82,20 @@ def add_our_item():
     raw_item = request.json["ouritem"]
     new_item = OurItem.from_json(json_data=json.dumps(raw_item))
     mongo.add_item(new_item)    
+    return 'Hello, World!'
+
+@app.route('/update_our_item', methods=['PUT'])
+def update_our_item():
+    raw_item = request.json["ouritem"]
+    # entry = Item(**raw_item)
+    mongo.update_our_item(raw_item)
+    return 'Hello, World!'
+
+@app.route('/update_item', methods=['PUT'])
+def update_item():
+    raw_item = request.json["item"]
+    # entry = Item(**raw_item)
+    mongo.update_item(raw_item)
     return 'Hello, World!'
 
 @app.route('/link_item', methods=['PUT'])

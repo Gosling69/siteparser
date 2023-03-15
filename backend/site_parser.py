@@ -15,18 +15,18 @@ def parse_sites():
     sites = mongo.get_sites()
     items = mongo.get_items()
     for item in items:
-        page = requests.get(item.item_link,  verify=False)
+        page = requests.get(item["item_link"],  verify=False)
         soup = BeautifulSoup(page.text, "html.parser")
         quant_kwargs = {}
         price_kwargs = {}
         for site in sites:
-            if site.pk == item.site.pk:
+            if site.pk.__str__() == item["site"]["_id"]["$oid"]:
                 price_kwargs = site.path_to_price
                 quant_kwargs = site.path_to_quantity
                 break
         if len(quant_kwargs) == 0 or len(price_kwargs) == 0:
                 # print(price_kwargs, quant_kwargs)
-                print(f"NO PATH FOR PRICE OR QUANTITY FOR: {item.item_link}")
+                print(f'NO PATH FOR PRICE OR QUANTITY FOR: {item["item_link"]}')
                 continue
         quantity, price = 0, 0
         quantity_target = soup.find(**quant_kwargs)
@@ -38,7 +38,7 @@ def parse_sites():
             price = int(re.sub('[^0-9]','', price_target.text))
 
         parse_data = ParseData(quantity=quantity, price=price)
-        mongo.add_data_to_item(item.pk, parse_data)
+        mongo.add_data_to_item(item["_id"]["$oid"], parse_data)
 
 def update_our_items():
     our_items = mongo.get_our_items()
@@ -71,3 +71,15 @@ def export_from_xlsx():
                 item_link = links[i]
             )
             mongo.add_item(new_item)
+def export_our_from_xlsx():
+    xl = pd.ExcelFile(INIT_DATA_NAME)
+    dataframe = pd.read_excel(INIT_DATA_NAME, sheet_name=xl.sheet_names[3])
+    names = dataframe['Name'].values
+    links = dataframe['Link'].values
+    for i in range(len(names)):
+        new_item = OurItem(
+            name = names[i],
+            item_link = links[i]
+        )
+        mongo.add_item(new_item)
+# export_our_from_xlsx()

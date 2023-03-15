@@ -16,6 +16,7 @@ class Action(EmbeddedDocument):
     action = StringField()
     
 class Site(Document):
+    name = StringField()
     url = URLField()
     path_to_price = DictField()
     path_to_quantity = DictField()
