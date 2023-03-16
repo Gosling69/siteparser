@@ -1,12 +1,13 @@
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.remote.webdriver import By
+# from selenium import webdriver
+# from selenium.webdriver.common.keys import Keys
+# from selenium.webdriver.remote.webdriver import By
 import mongo
 from models import *
 from bs4 import BeautifulSoup
 import requests
 import pandas as pd
 import re
+import time
 
 
 INIT_DATA_NAME = "init_data.xlsx"
@@ -14,31 +15,32 @@ INIT_DATA_NAME = "init_data.xlsx"
 def parse_sites():
     sites = mongo.get_sites()
     items = mongo.get_items()
-    for item in items:
-        page = requests.get(item["item_link"],  verify=False)
-        soup = BeautifulSoup(page.text, "html.parser")
-        quant_kwargs = {}
-        price_kwargs = {}
-        for site in sites:
-            if site.pk.__str__() == item["site"]["_id"]["$oid"]:
-                price_kwargs = site.path_to_price
-                quant_kwargs = site.path_to_quantity
-                break
-        if len(quant_kwargs) == 0 or len(price_kwargs) == 0:
-                # print(price_kwargs, quant_kwargs)
-                print(f'NO PATH FOR PRICE OR QUANTITY FOR: {item["item_link"]}')
-                continue
-        quantity, price = 0, 0
-        quantity_target = soup.find(**quant_kwargs)
-        if quantity_target != None:
-            quantity = int(quantity_target.attrs['data-max'])
+    with requests.session() as s:
+        for item in items:
+            page = requests.get(item["item_link"],  verify=False)
+            soup = BeautifulSoup(page.text, "html.parser")
+            quant_kwargs = {}
+            price_kwargs = {}
+            for site in sites:
+                if site.pk.__str__() == item["site"]["_id"]["$oid"]:
+                    price_kwargs = site.path_to_price
+                    quant_kwargs = site.path_to_quantity
+                    break
+            if len(quant_kwargs) == 0 or len(price_kwargs) == 0:
+                    # print(price_kwargs, quant_kwargs)
+                    print(f'NO PATH FOR PRICE OR QUANTITY FOR: {item["item_link"]}')
+                    continue
+            quantity, price = 0, 0
+            quantity_target = soup.find(**quant_kwargs)
+            if quantity_target != None:
+                quantity = int(quantity_target.attrs['data-max'])
 
-        price_target = soup.find(**price_kwargs)
-        if price_target != None:
-            price = int(re.sub('[^0-9]','', price_target.text))
+            price_target = soup.find(**price_kwargs)
+            if price_target != None:
+                price = int(re.sub('[^0-9]','', price_target.text))
 
-        parse_data = ParseData(quantity=quantity, price=price)
-        mongo.add_data_to_item(item["_id"]["$oid"], parse_data)
+            parse_data = ParseData(quantity=quantity, price=price)
+            mongo.add_data_to_item(item["_id"]["$oid"], parse_data)
 
 def update_our_items():
     our_items = mongo.get_our_items()
@@ -49,16 +51,33 @@ def update_our_items():
     if len(our_site) > 1:
         print("MORE THAN ONE SITE FOUND")
         return
+    indexes = []
+    for i in range(len(our_items)//10 + 1):
+        indexes.append([10*i, 10*(i+1)])
+        pass
     price_kwargs = our_site[0].path_to_price
-    for item in our_items:        
-        page = requests.get(item.item_link,  verify=False)
-        soup = BeautifulSoup(page.text, "html.parser")
-        price_target = soup.find(**price_kwargs)
-        if price_target != None:
-            price = int(re.sub('[^0-9]','', price_target.text))
-        mongo.update_our_item(item.pk, {"set__last_price":price})
+    for [init,end] in indexes:
+        with requests.session() as s:
+            for item in our_items[init:end]:        
+                page = s.get(item.item_link.replace(" ",""),  verify=False)
+                # print(page.status_code)
+                print(item.item_link)
+                soup = BeautifulSoup(page.content, "html.parser")
+                # print(soup)
+                price_target = soup.find(**price_kwargs)
+                print(price_target)
+                update_dict={"_id":{"$oid":item.pk.__str__()}}
+                if price_target != None:
+                    price = int(re.sub('[^0-9]','', price_target.text))
+                    print( price)
+                    update_dict["last_price"] = price
+                mongo.update_our_item(update_dict)
+        time.sleep(60)
+    
 # parse_sites()
 # update_our_items()
+# time.sleep(60)
+# update_our_items(10,20)
 def export_from_xlsx():
     xl = pd.ExcelFile(INIT_DATA_NAME)
     for i in range(2):

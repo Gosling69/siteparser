@@ -73,12 +73,13 @@ def add_data_to_item(item_id:str, parse_data: ParseData) -> dict:
     disconnect('test')         
     return {}
 
-def update_our_item(item_id: str, update_dict:dict) -> dict:
-    connect('test',host=MONGO_HOST, port=MONGO_PORT)
-    target_item = OurItem.objects(pk=item_id)
-    if target_item.count() > 0:
-        target_item.update(**update_dict)
-    disconnect('test')
+# def update_our_item(item_id: str, update_dict:dict) -> dict:
+#     connect('test',host=MONGO_HOST, port=MONGO_PORT)
+#     target_item = OurItem.objects(pk=item_id)
+#     if target_item.count() > 0:
+#         target_item.update(**update_dict)
+#     disconnect('test')
+#     return {}
 
 def update_item(entry: dict ) -> dict:
     connect('test',host=MONGO_HOST, port=MONGO_PORT)
@@ -102,14 +103,14 @@ def update_our_item(entry: dict ) -> dict:
     if target_item.count() > 0:
         update_dict = {}
         for key in entry:
-            if key in ["name","item_link", "linked_items"]:
+            if key in ["name","item_link", "linked_items","last_price"]:
                 if type(entry[key]) is dict:
                     update_dict[f"set__{key}"] = ObjectId(entry[key]["_id"]["$oid"]) 
                 elif type(entry[key]) is list:
                     update_dict[f"set__{key}"] = list(map(lambda el : ObjectId(el), entry[key])) 
                 else:
                     update_dict[f"set__{key}"] = entry[key]
-        # print(update_dict)
+        print(update_dict)
         target_item.update(**update_dict)
     disconnect('test')
     return {}

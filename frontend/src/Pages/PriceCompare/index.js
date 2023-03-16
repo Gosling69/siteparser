@@ -30,12 +30,26 @@ import StoreCard from "../../Components/StoreCard"
                         let color = !prices.length? "black" : prices.some((elem) => elem > el.last_price) ? "#198754":"#DC3545"
                         return(
                             <Nav.Item>
-                                <Nav.Link 
-                                    style={{"backgroundColor":"white", "color":color}}
-                                    eventKey={index}
-                                >
-                                    {`${el.name} - ${el.last_price}`}
-                                </Nav.Link>
+                                <Row>
+                                    <Col>
+                                    <Nav.Link 
+                                        style={{"backgroundColor":"white", "color":color}}
+                                        eventKey={index}
+                                    >
+                                        {`${el.name} - ${el.last_price}`}
+                                    </Nav.Link>
+                                    </Col>
+                                    <Col>
+                                    <Button
+                                        onClick={() => window.open(el.item_link, "_blank")} variant="primary"
+
+                                    >
+                                        Ссылка на товар
+                                    </Button>
+                                    </Col>
+                                </Row>
+                                
+                               
                             </Nav.Item>
                         )
                     }
