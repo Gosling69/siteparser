@@ -19,9 +19,9 @@ function App() {
     <NavBar/>
     <BrowserRouter>
       <Routes>
-          <Route path="/" element={<HomePage />}/>
+          <Route path="/" element={<QuantityCompare />}/>
           <Route path="/price_compare" element={<PriceCompare />}/>
-          <Route path="/quantity_compare" element={<QuantityCompare />}/>
+          {/* <Route path="/quantity_compare" element={<QuantityCompare />}/> */}
           <Route path="/admin" element={<AdminPage />}/>
         </Routes>
       </BrowserRouter>

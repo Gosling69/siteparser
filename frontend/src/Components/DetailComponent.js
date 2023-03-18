@@ -1,15 +1,11 @@
 
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
-import Chart, {
-    ArgumentAxis,
-    Label,
-    Legend,
-    Series,
-    Font,
-    Crosshair,
-    Tooltip
-  } from 'devextreme-react/chart';
+import {Row, Col, Container} from "react-bootstrap"
+import {Chart, Series, ArgumentAxis,Label,Crosshair,Font,Legend} from "devextreme-react/chart"
+  
+import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+
 
 const DetailComponent = (props) => {
     // console.log(props.data.data.data)
@@ -23,8 +19,68 @@ const DetailComponent = (props) => {
                 fill
             >
                 <Tab eventKey="quantity" title="Quantity">
+                {/* <Row>
+                    <Col>
+                    Динамика Остатков
+                    <LineChart 
+                        width={600} 
+                        height={300} 
+                        data={props.data.data.data.map(el => {
+                            return {
+                                quantity:el.quantity,
+                                date_time:new Date(el.date_time.$date).toISOString()
+                            }
+                        })} 
+                        margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
+                    >
+                        <Line type="monotone" dataKey="quantity" stroke="#8884d8" />
+                        <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
+                        <XAxis dataKey="date_time" />
+                        <YAxis />
+                        <Tooltip />
+                    </LineChart>
+                    </Col>
+                    <Col>
+                    Динамика Цен
+                    <LineChart 
+                    width={600} 
+                    height={300} 
+                    data={props.data.data.data.map(el => {
+                        return {
+                            price:el.price,
+                            date_time:new Date(el.date_time.$date).toISOString()
+                        }
+                    })} 
+                    margin={{ top: 5, right: 20, bottom: 5, left: 20 }}
+                >
+                    <Line type="monotone" dataKey="price" stroke="#8884d8" />
+                    <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
+                    <XAxis dataKey="date_time" />
+                    <YAxis />
+                    <Tooltip />
+                </LineChart>
+                    </Col>
+                </Row> */}
+                    {/* <LineChart 
+                        width={500} 
+                        height={300} 
+                        data={props.data.data.data.map(el => {
+                            return {
+                                quantity:el.quantity,
+                                date_time:new Date(el.date_time.$date).toISOString()
+                            }
+                        })} 
+                        margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
+                    >
+                        <Line type="monotone" dataKey="quantity" stroke="#8884d8" />
+                        <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
+                        <XAxis dataKey="date_time" />
+                        <YAxis />
+                        <Tooltip />
+                    </LineChart> */}
+
                     <Chart
-                        id="quantityChart"
+                        // id="quantityChart"
                         dataSource={props.data.data.data.map(el => {
                             return {
                                 quantity:el.quantity,
@@ -61,8 +117,25 @@ const DetailComponent = (props) => {
                     </Chart>
                 </Tab>
                 <Tab eventKey="pice" title="Price">
+                {/* <LineChart 
+                    width={500} 
+                    height={300} 
+                    data={props.data.data.data.map(el => {
+                        return {
+                            price:el.price,
+                            date_time:new Date(el.date_time.$date).toISOString()
+                        }
+                    })} 
+                    margin={{ top: 5, right: 20, bottom: 5, left: 20 }}
+                >
+                    <Line type="monotone" dataKey="price" stroke="#8884d8" />
+                    <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
+                    <XAxis dataKey="date_time" />
+                    <YAxis />
+                    <Tooltip />
+                </LineChart> */}
                     <Chart
-                        id="priceChart"
+                        // id="priceChart"
                         dataSource={props.data.data.data.map(el => {
                             return {
                                 price:el.price,

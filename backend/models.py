@@ -11,16 +11,18 @@ class DriverType(Enum):
     SELENIUM = 'selenium'
     REGULAR = 'regular'
 
-class Action(EmbeddedDocument):
+class PipeElement(EmbeddedDocument):
     target = StringField()
     action = StringField()
+    action_args = StringField()
     
 class Site(Document):
+    name = StringField()
     url = URLField()
     path_to_price = DictField()
     path_to_quantity = DictField()
     driver_type = EnumField(DriverType, default=DriverType.REGULAR)
-    actions = EmbeddedDocumentListField(Action)
+    actions = EmbeddedDocumentListField(PipeElement)
 
 class Item(Document):
     name = StringField()

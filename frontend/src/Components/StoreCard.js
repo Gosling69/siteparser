@@ -16,9 +16,11 @@ const StoreCard = (props) => {
                 style={{ width: '18rem' }}
             >
 
-            <Card.Header>Header</Card.Header>
+            <Card.Header>{item.site?.name}</Card.Header>
             <Card.Body>
-                <Card.Title>{`${item.name} - ${item.last_price}`}</Card.Title>
+                <Card.Title>{item.name}</Card.Title>
+                <Card.Subtitle className="mb-2">{`Цена - ${item.last_price} р`}</Card.Subtitle>
+
                 <Card.Text>
                 Some quick example text to build on the card title and make up the
                 bulk of the card's content.

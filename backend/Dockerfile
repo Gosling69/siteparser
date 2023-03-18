@@ -1,5 +1,5 @@
-# Create our image based on Python 3.9
-FROM python:3.9
+# Create our image based on Python 3.9 with selenium
+FROM joyzoursky/python-chromedriver:3.9
 
 # Expose ports
 EXPOSE 5000
