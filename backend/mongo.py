@@ -6,6 +6,7 @@ from json import loads
 from bson.json_util import dumps
 from bson.objectid import ObjectId
 from datetime import datetime
+# from site_parser import parse_our_site, parse_enemy_site
 
 MONGO_HOST = "mongo"
 MONGO_PORT = 27017
@@ -48,9 +49,14 @@ def add_item(entry: Union[Item, OurItem]) -> dict:
             url = split_url.scheme + '://' + split_url.netloc 
         )
         new_site.save()
-    entry.site = Site.objects.get(url=url)
+    entry_site = Site.objects.get(url=url)
+    entry.site = entry_site
     entry.save()
     disconnect('test')
+    # if type(entry) is Item:
+    #     parse_enemy_site(entry, entry_site)
+    # else:
+    #     parse_our_site(entry)
     return {}
 
 def link_items(enemy_item_id: str, our_item_id: str) -> dict:
@@ -124,10 +130,10 @@ def get_items(init_date: str = None, end_date: str = None) -> list:
             {
                 "$lookup":
                     {
-                    "from": "site",
-                    "localField": "site",
-                    "foreignField": "_id",
-                    "as": "site"
+                        "from": "site",
+                        "localField": "site",
+                        "foreignField": "_id",
+                        "as": "site"
                     }
             },
             { "$unwind": { "path": "$site" } },
@@ -211,6 +217,29 @@ def get_items(init_date: str = None, end_date: str = None) -> list:
         #if given init_date and end_date
         else:
             pipeline = [
+            {
+                "$lookup":
+                    {
+                        "from": "site",
+                        "localField": "site",
+                        "foreignField": "_id",
+                        "as": "site"
+                    }
+            },
+            { "$unwind": { "path": "$site" } },
+            {
+                "$project": 
+                {
+                    "_id": 1,
+                    "name": 1,
+                    "item_link": 1,
+                    # "last_price": 1,
+                    # "last_quantity":1,
+                    "site.name": 1,
+                    "site._id":1,
+                    "data":1,
+                }
+            },
             {
                 u"$match": {}
             }, 

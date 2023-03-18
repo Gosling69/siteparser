@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import ApiService from "../../Api/api"
-import {Row, Col, Nav, Tab, Card, Button} from "react-bootstrap"
+import {Row, Col, Nav, Tab} from "react-bootstrap"
+import {Button} from "devextreme-react"
 import StoreCard from "../../Components/StoreCard"
  
  const PriceCompare = (props) => {
@@ -33,19 +34,22 @@ import StoreCard from "../../Components/StoreCard"
                                 <Row>
                                     <Col>
                                     <Nav.Link 
-                                        style={{"backgroundColor":"white", "color":color}}
+                                        style={{
+                                            "backgroundColor":"white", 
+                                            "color":color
+                                        }}
                                         eventKey={index}
                                     >
-                                        {`${el.name} - ${el.last_price}`}
+                                        {`${el.name} - ${el.last_price} р`}
                                     </Nav.Link>
                                     </Col>
-                                    <Col>
+                                    <Col xs={2}>
                                     <Button
+                                        icon="link"
                                         onClick={() => window.open(el.item_link, "_blank")} variant="primary"
-
-                                    >
-                                        Ссылка на товар
-                                    </Button>
+                                        
+                                    />
+                                    
                                     </Col>
                                 </Row>
                                 

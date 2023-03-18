@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 
 export default class ApiService {
 
-    static endpoint = "http://localhost:5000"
+    static endpoint = "http://92.127.180.188:5000"
 
     static async getItems(params={}) {
         let response = await axios.get(ApiService.endpoint + "/get_items", {params:params})
@@ -53,7 +53,7 @@ export default class ApiService {
     }
     static async addOurItem(item) {
         if (item._id) {
-            delete item.ouritem._id
+            delete item._id
         }
         for (let prop in item) {
             if ( _.isEmpty(item[prop])) {

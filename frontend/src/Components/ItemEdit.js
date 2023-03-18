@@ -63,7 +63,7 @@ const ItemEdit = (props) => {
                 valueExpr="_id.$oid"
             />
         </Column>
-        <Scrolling mode="virtual" />
+        {/* <Scrolling mode="virtual" /> */}
         <FormItem colSpan={2} editorType="dxTextArea" editorOptions={notesEditorOptions} />
         </DataGrid>
     )

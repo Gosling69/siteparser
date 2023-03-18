@@ -20,8 +20,7 @@ const OurItemEdit = (props) => {
         .join(', ')
         container.textContent = text || noBreakSpace;
         container.title = text;
-      }
-
+    }
 
     const [ourItems,setOurItems] = useState(props.ourItems)
     // const [sites, setSites] = useState(props.sites)
@@ -68,7 +67,7 @@ const OurItemEdit = (props) => {
             />
             {/* <RequiredRule /> */}
           </Column>
-        <Scrolling mode="virtual" />
+        {/* <Scrolling mode="virtual"  rowRenderingMode="virtual"  /> */}
             <FormItem colSpan={2} editorType="dxTextArea" editorOptions={notesEditorOptions} />
         </DataGrid>
     )

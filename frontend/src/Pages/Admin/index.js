@@ -61,7 +61,7 @@ const AdminPage = (props) => {
                     ourItems={ourItems}
                 />
             </Tab> */}
-            <Tab className="mx-5 mt-2" eventKey="items" title="Items">
+            <Tab className="mx-5 mt-2 " eventKey="items" title="Items">
                 <ItemEdit
                     refresh={refreshItems}
                     items={items}

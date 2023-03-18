@@ -12,6 +12,7 @@ import DetailComponent from "../../Components/DetailComponent";
 import { useEffect, useState } from "react"
 import ApiService from "../../Api/api"
 import { Container } from 'react-bootstrap';
+import ChartCell from '../../Components/ChartCell';
 
 const QuantityCompare = (props) => {
 
@@ -90,7 +91,10 @@ const QuantityCompare = (props) => {
             </Item>
             
             </Toolbar>
-            <Column dataField="name"/>
+            <Column dataField="name" cellRender={data => <ChartCell data={data} />}/>
+            <Column dataField="site.name"/>
+            <Column dataField="item_link" />
+
             {/* <Column dataField="" caption="Plus By Day" />
             <Column dataField="" caption="Minus By Day" />
             <Column dataField="" caption="Plus By Week" />

@@ -38,7 +38,7 @@ const HomePage = (props) => {
                 keyExpr="_id"
                 showBorders={true}
                 height={700}
-                style={{}}
+
             >
             <Toolbar>
             <Item location="center">
@@ -66,6 +66,8 @@ const HomePage = (props) => {
             
             </Toolbar>
             <Column dataField="name"/>
+            <Column dataField="site.name"/>
+
             <Column dataField="item_link" />
             <Scrolling mode="virtual" />
             <MasterDetail
