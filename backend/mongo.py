@@ -6,7 +6,7 @@ from json import loads
 from bson.json_util import dumps
 from bson.objectid import ObjectId
 from datetime import datetime
-# from site_parser import parse_our_site, parse_enemy_site
+import parse_funcs
 
 MONGO_HOST = "mongo"
 MONGO_PORT = 27017
@@ -61,11 +61,17 @@ def add_item(entry: Union[Item, OurItem]) -> dict:
     entry_site = Site.objects.get(url=url)
     entry.site = entry_site
     entry.save()
-    disconnect('test')
-    # if type(entry) is Item:
-    #     parse_enemy_site(entry, entry_site)
-    # else:
-    #     parse_our_site(entry)
+    if type(entry) is Item:
+        if entry_site.driver_type == DriverType.REGULAR:
+            parsefunc = parse_funcs.parse_regular
+        else:
+            parsefunc = parse_funcs.parse_selenium
+        quantity, price = parsefunc(entry, entry_site)
+        if quantity != -1 and price != -1:
+            add_data_to_item(entry.pk.__str__(), ParseData(quantity=quantity, price=price))
+    else:
+        update_dict = parse_funcs.parse_our_site(entry, entry_site)
+        update_our_item(update_dict)
     return {}
 
 
@@ -87,16 +93,8 @@ def add_data_to_item(item_id:str, parse_data: ParseData) -> dict:
     )      
     return {}
 
-# def update_our_item(item_id: str, update_dict:dict) -> dict:
-#     connect('test',host=MONGO_HOST, port=MONGO_PORT)
-#     target_item = OurItem.objects(pk=item_id)
-#     if target_item.count() > 0:
-#         target_item.update(**update_dict)
-#     disconnect('test')
-#     return {}
-
+@database_connector
 def update_item(entry: dict ) -> dict:
-    connect('test',host=MONGO_HOST, port=MONGO_PORT)
     target_item = Item.objects(id=entry["_id"]["$oid"])
     if target_item.count() > 0:
         update_dict = {}
@@ -108,11 +106,10 @@ def update_item(entry: dict ) -> dict:
                     update_dict[f"set__{key}"] = entry[key]
         # print(update_dict)
         target_item.update(**update_dict)
-    disconnect('test')
     return {}
 
+@database_connector
 def update_our_item(entry: dict ) -> dict:
-    connect('test',host=MONGO_HOST, port=MONGO_PORT)
     target_item = OurItem.objects(id=entry["_id"]["$oid"])
     if target_item.count() > 0:
         update_dict = {}
@@ -126,7 +123,6 @@ def update_our_item(entry: dict ) -> dict:
                     update_dict[f"set__{key}"] = entry[key]
         print(update_dict)
         target_item.update(**update_dict)
-    disconnect('test')
     return {}
 
 
@@ -160,8 +156,6 @@ def get_items(init_date: str = None, end_date: str = None) -> list:
             }
         ]
         result = loads(dumps(Item.objects().aggregate(pipeline)))
-
-        disconnect('test')
         return result
 
 

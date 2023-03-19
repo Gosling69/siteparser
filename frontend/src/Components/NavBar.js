@@ -1,19 +1,59 @@
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
+import { useLocation } from 'react-router-dom';
 
 const NavBar = (props) => {
+
+    const whereabouts = useLocation().pathname
+    const style = () => {
+        return {
+           "textDecoration": "underline",
+           "textUnderlineOffset": "5px",
+           "textDecorationColor": "#F3D223",
+
+
+        }
+    }
+
+    const linkNamesMap = {
+        "/admin":"Admin",
+        "/price_compare":"Price",
+        "/":"Quantity",
+    }
     return(
-        <Navbar  sticky='top' bg="dark" variant="dark">
-            {/* <Container> */}
-                {/* <Navbar.Brand href="#home">Navbar</Navbar.Brand> */}
-                <Nav className="mx-4">
-                    {/* <Nav.Link href="/">Home</Nav.Link> */}
-                    <Nav.Link href="/admin">Admin</Nav.Link>
-                    <Nav.Link href="/price_compare">Price</Nav.Link>
-                    <Nav.Link href="/">Quantity</Nav.Link>
+        <Navbar 
+            style={{
+                "borderRadius":"0 0 10px 10px",
+                "backgroundColor":"#FBEA58",
+                "boxShadow": "0px 4px 5px rgba(0, 0, 0, 0.25)",
+            }} 
+            sticky='top' 
+        >
+                <div
+                    className='mx-5'
+                >
+                    ШТАБЕЛЬ
+                </div>
+                <Nav
+                    style={{
+                        "marginLeft":"auto",
+                        "color":"black"
+                    }}
+                >
+                    {Object.entries(linkNamesMap).map(([link, name]) =>
+                        <Nav.Link 
+                            style={whereabouts === link ? style():{}} 
+                            className='mx-5' 
+                            active={whereabouts === link} 
+                            href={link}
+                            key={name}
+                        >
+                            {name}
+                        </Nav.Link>
+                    )}
+                    
                 </Nav>
-            {/* </Container> */}
         </Navbar>
     )
 

@@ -7,21 +7,23 @@ import DataGrid,
   Toolbar,
   Item
 } from 'devextreme-react/data-grid';
+import {ButtonGroup, Button as BootButton,  Container, Form, InputGroup} from "react-bootstrap"
 import {Button, DateBox, SelectBox} from "devextreme-react"
 import DetailComponent from "../../Components/DetailComponent";
 import { useEffect, useState } from "react"
 import ApiService from "../../Api/api"
-import { Container } from 'react-bootstrap';
 import ChartCell from '../../Components/ChartCell';
+import LinkCell from '../../Components/LinkCell';
+import NavBar from '../../Components/NavBar';
 
 const QuantityCompare = (props) => {
 
     const [items, setItems] = useState([])
-    const[endDate, setEndDate] = useState(new Date())
-    const [initDate, setInitDate] = useState(new Date(Date.now() - 86400000))
+    const[endDate, setEndDate] = useState(new Date().toISOString().slice(0,10))
+    const [initDate, setInitDate] = useState(new Date(Date.now() - 86400000).toISOString().slice(0,10))
 
     const refresh = () => {
-        ApiService.getItems({init_date:initDate.toISOString().slice(0,10), end_date:endDate.toISOString().slice(0,10)})
+        ApiService.getItems({init_date:initDate, end_date:endDate})
         .then((res) =>{
             console.log(res)
             setItems(
@@ -37,28 +39,45 @@ const QuantityCompare = (props) => {
                         }
                         item.plusByPeriod = plusByPeriod
                         item.minusByPeriod = minusByPeriod
-                        // item = item.data.reduce((prev, curr) => {
-                        //     if(prev.quantity < curr.quantity){
-                        //         return curr.quantity - prev.quantity 
-                        //     } else {
-                        //         return 0
-                        //     }
-                        // },0)
                         return item
                     })
             )
         })
     }
 
+    const setWeek = () => {
+        let endDate = new Date()
+        let initDate = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate() - 7)
+        setInitDate(initDate.toISOString().slice(0,10))
+        setEndDate(endDate.toISOString().slice(0,10))
+
+    }
+    const setMonth = () => {
+        let endDate = new Date()
+        let initDate = new Date(endDate.getFullYear(), endDate.getMonth() - 1, endDate.getDate())
+        setInitDate(initDate.toISOString().slice(0,10))
+        setEndDate(endDate.toISOString().slice(0,10))
+
+    }
+    const setDay = () => {
+        let endDate = new Date()
+        let initDate = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate() - 1)
+        setInitDate(initDate.toISOString().slice(0,10))
+        setEndDate(endDate.toISOString().slice(0,10))
+
+    }
+
+
     useEffect(() => {
         refresh()
         // setItems(data)
     },[])
     return(
-        
+        <>
+            <NavBar/>
+
         <Container className='mt-3'>
             <DataGrid 
-            
                 id="grid-container"
                 dataSource={items}
                 keyExpr="_id"
@@ -68,6 +87,28 @@ const QuantityCompare = (props) => {
             >
             <Toolbar>
             <Item location="center">
+            <InputGroup>
+                <BootButton onClick={setDay} variant="secondary">Day</BootButton>
+                <BootButton onClick={setWeek} variant="secondary">Week</BootButton>
+                <BootButton onClick={setMonth} variant="secondary">Month</BootButton>
+                <Form.Control
+                    value={initDate}
+                    onChange={(e) => setInitDate(e.target.value)}
+                    type='date'
+                />
+                <Form.Control
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    type='date'
+                />
+            </InputGroup>
+                {/* <ButtonGroup aria-label="Basic example">
+                    <BootButton variant="secondary">Day</BootButton>
+                    <BootButton variant="secondary">Week</BootButton>
+                    <BootButton variant="secondary">Month</BootButton>
+                </ButtonGroup> */}
+            </Item>
+            {/* <Item location="center">
                 <DateBox    
                     // defaultValue={initDate}
                     value={initDate}
@@ -81,7 +122,7 @@ const QuantityCompare = (props) => {
                     onValueChanged={(e) => setEndDate(e.value)}
                     // defaultValue={endDate}
                 />
-            </Item>
+            </Item> */}
             <Item location="after">
                 <Button
                     icon='refresh'
@@ -92,23 +133,24 @@ const QuantityCompare = (props) => {
             
             </Toolbar>
             <Column dataField="name" cellRender={data => <ChartCell data={data} />}/>
-            <Column dataField="site.name"/>
-            <Column dataField="item_link" />
+            <Column dataField="site.name" cellRender={data => <LinkCell data={data}/>} />
+            {/* <Column dataField="item_link" /> */}
 
             {/* <Column dataField="" caption="Plus By Day" />
             <Column dataField="" caption="Minus By Day" />
             <Column dataField="" caption="Plus By Week" />
             <Column dataField="" caption="Minus By Week" /> */}
-            <Column dataField="plusByPeriod" caption="Plus By Period" />
-            <Column dataField="minusByPeriod" caption="Minus By Period" />
+            <Column dataField="plusByPeriod" width={200} caption="Plus By Period" />
+            <Column dataField="minusByPeriod" width={200} caption="Minus By Period" />
 
-            <Scrolling mode="virtual" />
+            {/* <Scrolling mode="virtual" /> */}
             {/* <MasterDetail
                 enabled={true}
                 component={DetailComponent}
             /> */}
             </DataGrid>
         </Container>
+        </>
     )
 }
 

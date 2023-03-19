@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 
 export default class ApiService {
 
-    static endpoint = "http://92.127.180.188:5000"
+    static endpoint = "http://localhost:5000"
 
     static async getItems(params={}) {
         let response = await axios.get(ApiService.endpoint + "/get_items", {params:params})
@@ -25,6 +25,7 @@ export default class ApiService {
     }
     static async runUpdate(){
         let response = await axios.post(ApiService.endpoint + "/run_update")
+        window.alert(response.data)
         return response
     }
     static async updateItem(item) {

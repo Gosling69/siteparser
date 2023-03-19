@@ -24,7 +24,7 @@ const SiteEdit = (props) => {
             dataSource={sites}
             keyExpr="_id"
             showBorders={true}
-            height={625}
+            height={700}
             onRowUpdated={(e) => console.log(e)}
         >
         <Editing

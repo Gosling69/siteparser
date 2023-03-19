@@ -16,8 +16,9 @@ import QuantityCompare from './Pages/QuantityCompare';
 function App() {
   return (
     <>
-    <NavBar/>
+    
     <BrowserRouter>
+    {/* <NavBar/> */}
       <Routes>
           <Route path="/" element={<QuantityCompare />}/>
           <Route path="/price_compare" element={<PriceCompare />}/>

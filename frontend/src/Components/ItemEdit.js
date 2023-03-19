@@ -34,7 +34,7 @@ const ItemEdit = (props) => {
             dataSource={items}
             keyExpr="_id"
             showBorders={true}
-            height={600}
+            height={700}
             onRowUpdated={(e) => ApiService.updateItem(e.data).then(() => props.refresh())}
             onRowRemoved={(e) => console.log(e)}
             onRowInserted={(e) => ApiService.addItem(e.data).then(() => props.refresh())}

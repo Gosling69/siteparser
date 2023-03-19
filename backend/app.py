@@ -1,7 +1,8 @@
 from flask import Flask, request
 from flask_apscheduler import APScheduler
+from apscheduler.events import EVENT_JOB_EXECUTED, EVENT_JOB_MISSED, EVENT_JOB_ERROR
 from flask_cors import CORS
-
+# from flask_socketio import SocketIO
 from models import *
 import site_parser
 import mongo
@@ -10,22 +11,48 @@ import json
 app = Flask(__name__)
 CORS(app)
 
+# socketio=SocketIO(app)
+class BoolWrap(object):
+    def __init__(self) -> None:
+        self.status = False
+        pass
+    def set_status(self, arg):
+        self.status = arg
+
+is_job_running = BoolWrap()
+
 scheduler = APScheduler()
 
+def listener(event):
+    is_job_running.set_status(False)
+    print(f'Job {event.job_id} raised {event.exception.__class__.__name__}')
+
+
 def scheduleTask():
+    is_job_running.set_status(True)
     print("PARSING SITES")
     site_parser.parse_sites()
     site_parser.update_our_items()
     print("DONE")
+    is_job_running.set_status(False)
 
 
+scheduler.add_listener(listener, EVENT_JOB_EXECUTED | EVENT_JOB_MISSED | EVENT_JOB_ERROR)
 scheduler.add_job(id = 'Scheduled Task', func=scheduleTask, trigger="interval", hours=1)
 scheduler.start()
 
+# @socketio.on('connect')
+# def ws_connect():
+#     pass
+
+
 @app.route('/run_update', methods=['POST'])
 def run_update():
-    scheduleTask()
-    return "SAS"
+    if not is_job_running.status:
+        scheduleTask()
+        return "OK"
+    else:
+        return "Already running"
 
 @app.route('/get_items', methods=['GET'])
 def get_items():

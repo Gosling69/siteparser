@@ -16,7 +16,7 @@ const ChartCell = (props) => {
                 {props.data.displayValue}
 
             </Col>
-            <Col>
+            <Col className="d-flex justify-content-end">
             <Button
                 icon="chart"
                 onClick={handleShow}                                         
