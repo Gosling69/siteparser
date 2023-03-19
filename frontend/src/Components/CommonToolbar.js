@@ -1,0 +1,76 @@
+
+import {Row, Col, Button} from "react-bootstrap"
+import ApiService from "../Api/api"
+import UilRefresh from '@iconscout/react-unicons/icons/uil-refresh'
+import UilExport from '@iconscout/react-unicons/icons/uil-export'
+import UilPlus from '@iconscout/react-unicons/icons/uil-plus'
+
+
+
+const CommonToolbar = (props) => {
+
+    const ButtonStyle = {
+        backgroundColor:"white",
+        color:"black",
+        boxShadow: "0px 4px 5px rgba(0, 0, 0, 0.25)",
+        border:"none",
+        minWidth:"200px"
+
+    }
+    const IconStyle = {
+        marginLeft:"20px"
+    }
+
+    return(
+        <Row className="mt-3 mb-3">
+            <Col  xs={2}>
+                <Button
+                    style={ButtonStyle}
+                    onClick={ApiService.runUpdate}
+                >
+                    Run Update
+                    <UilRefresh
+                        style={IconStyle}
+                        // className="mx-4"
+                        size="25" 
+                        color="#6F7888"
+                    />
+                </Button>
+            </Col>
+            <Col  xs={2}>
+                <Button
+                    style={ButtonStyle}
+                >
+                    
+                    Export To XLSX
+                    <UilExport
+                        // className="mx-4"
+                        style={IconStyle}
+                        size="25" 
+                        color="#6F7888"
+                    />
+                </Button>
+            </Col>
+            <Col className="d-flex justify-content-end" >
+                <Button
+                    style={ButtonStyle}
+                    onClick={() =>props.addRow()}
+                >
+                    Add new Item
+                    <UilPlus
+                        // className="mx-4"
+                        style={IconStyle}
+                        size="25" 
+                        color="#F3D223"
+                    />
+                </Button>
+
+            </Col>
+        </Row>
+    )
+    
+} 
+export default CommonToolbar
+CommonToolbar.defaultProps = {
+    addRow: () => console.log("NO FUNC TO ADD PASSED AS PROPS")
+}

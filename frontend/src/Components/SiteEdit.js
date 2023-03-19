@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import DataGrid, {
     Column,
     FormItem,
@@ -7,6 +7,7 @@ import DataGrid, {
     Lookup,
   } from 'devextreme-react/data-grid';
   import 'devextreme-react/text-area';
+  import CommonToolbar from "./CommonToolbar";
   
 
 const SiteEdit = (props) => {
@@ -16,22 +17,32 @@ const SiteEdit = (props) => {
         // console.log(props.sites)
         setSites(props.sites)
     },[props.sites])
+    let gridRef = useRef(null);
 
     const notesEditorOptions = { height: 100 };
 
     return(
+        <>
+        <CommonToolbar
+            addRow={() => gridRef.instance.addRow()}
+        />
         <DataGrid
             dataSource={sites}
             keyExpr="_id"
-            showBorders={true}
-            height={700}
+            showColumnLines={false}
+            showRowLines={false}
+            allowColumnResizing={true}
+            showBorders={false}
+            rowAlternationEnabled={true}
+            ref={(ref) => { gridRef = ref}}
+            height={650}
             onRowUpdated={(e) => console.log(e)}
         >
         <Editing
             mode="form"
             allowUpdating={true}
-            allowAdding={true}
-            allowDeleting={true}
+            // allowAdding={true}
+            // allowDeleting={true}
             
         />
         <Column dataField="name" />
@@ -43,6 +54,7 @@ const SiteEdit = (props) => {
         <Scrolling mode="virtual" />
             <FormItem colSpan={2} editorType="dxTextArea" editorOptions={notesEditorOptions} />
         </DataGrid>
+        </>
     )
 
 }

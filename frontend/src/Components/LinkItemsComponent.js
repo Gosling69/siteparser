@@ -71,7 +71,6 @@ const LinkItemsComponent = (props) => {
                     </InputGroup>
                 </Col>
                 <Col>
-                   
                 </Col>
             </Row>
     )
