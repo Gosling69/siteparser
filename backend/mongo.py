@@ -356,3 +356,54 @@ def get_our_items_with_linked() -> list:
             linked_item["site"]['_id'] = {"$oid":linked_item["site"]['_id'].__str__()}
         result.append(item)
     return result
+
+
+@database_connector
+def get_one_item(item_id: str = None, init_date: str = None, end_date: str = None) -> list:
+    
+    if item_id is None or init_date is None or end_date is None:
+        return "ERROR: Wrong type of arguments \"item_id\" or \"init_date\" or \"end_date\""
+
+    try:
+        pipeline = [
+        {
+            u"$match": {
+                u"_id": ObjectId("6409ab4d2d5e52ed6a43139f")
+            }
+        }, 
+        {
+            u"$project": {
+                        u"_id": 1,
+                        u"name": u"$name",
+                        u"item_link": u"$item_link",
+                        u"site": u"$site",
+                        u"data": {
+                            u"$filter": {
+                                u"input": u"$data",
+                                u"as": u"data",
+                                u"cond": {
+                                    u"$and": [
+                                        {
+                                            u"$gte": [
+                                                u"$$data.date_time",
+                                                datetime.strptime(f"{init_date}", "%Y-%m-%d")
+                                            ]
+                                        },
+                                        {
+                                            u"$lte": [
+                                                u"$$data.date_time",
+                                                datetime.strptime(f"{end_date}", "%Y-%m-%d")
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        u"_id": 1
+                    }
+        }
+        ]
+        result = loads(dumps(Item.objects().aggregate(pipeline)))
+    except ValueError:
+        return "ERROR: Wrong type of arguments \"init_date\" or \"end_date\""
+    return result

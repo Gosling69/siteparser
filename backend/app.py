@@ -58,10 +58,21 @@ def run_update():
 def get_items():
     init_date = request.args.get('init_date')
     end_date = request.args.get('end_date')
-    print(init_date, end_date)
     items = mongo.get_items(init_date, end_date)
-
+    
     return items
+
+@app.route('/get_one_item', methods=['GET'])
+def get_one_item():
+    item_id = request.args.get('item_id')
+    init_date = request.args.get('init_date')
+    end_date = request.args.get('end_date')
+    item = mongo.get_one_item(item_id, init_date, end_date)
+    
+    return item
+
+
+
 @app.route('/get_sites', methods=['GET'])
 def get_sites():
     sites = mongo.get_sites()
