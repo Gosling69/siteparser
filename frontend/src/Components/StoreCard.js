@@ -21,7 +21,6 @@ const StoreCard = (props) => {
                     filter: "drop-shadow(0px 4px 5px rgba(0, 0, 0, 0.25))",
                 }}
             >
-
             <Card.Header 
                 style={{"backgroundColor":"white"}}
             >
@@ -32,7 +31,6 @@ const StoreCard = (props) => {
                 </div>
             </Card.Header>
             <Card.Body>
-
             <Row >
                 <OverlayTrigger overlay={<Tooltip id="tooltip-disabled">{item.name}</Tooltip>}>
                 <Col
@@ -48,7 +46,7 @@ const StoreCard = (props) => {
                     {`${item.last_price} р`}
                 </Col>
             </Row>
-            <Row className="mb-5 successrow">
+            <Row className={variant === "success" ? "mb-5 successrow": "mb-5 dangerrow" }>
                 <Col> 
                 </Col>
                 <Col style={{"fontSize":"20px"}} xs={1}>
@@ -58,14 +56,11 @@ const StoreCard = (props) => {
                 {`${Math.abs(props.ourPrice - item.last_price)} р`}
                 </Col>
             </Row>
-            </Card.Body>
-            <Card.Footer>
-            <Row>
+            <Row className={variant === "success" ? "successrow": "dangerrow" }>
                 <Col>
                     Ссылка на товар в магазине
                 </Col>
                 <Col xs={3}>
-                    
                     <Button 
                         icon="link"
                         onClick={() => window.open(item.item_link, "_blank")} 
@@ -74,7 +69,7 @@ const StoreCard = (props) => {
                     </Button>
                 </Col>
             </Row>    
-            </Card.Footer>
+            </Card.Body>
             </Card>
     )
 

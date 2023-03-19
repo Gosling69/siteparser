@@ -45,7 +45,14 @@ const AdminPage = (props) => {
         refreshSites()
     },[])
     const ButtonStyle={
-        "minHeight":90
+        "minHeight":90,
+        "boxShadow": "0px 4px 5px rgba(0, 0, 0, 0.25)",
+        "backgroundColor":"white",
+        "color":"black",
+        "border":"none",
+        '&:active': {
+            "backgroundColor": '#FBEA58 !important',
+          } 
     }
     // let siteNames = Array.from(new Set(items.map(el => el.site.name)))
 
@@ -97,9 +104,10 @@ const AdminPage = (props) => {
                 <Col xs={1}>
                     <Row className="mb-3 mt-5 ">
                     <Button
-                        variant='secondary'
+                        // variant='secondary'
                         style={ButtonStyle}
                         onClick={() => setActiveTab("items")}
+                        active={activeTab === "items"}
                     >
                         Items
                     </Button>
@@ -107,8 +115,9 @@ const AdminPage = (props) => {
                     <Row className="mb-3">
   
                     <Button
-                        variant='secondary'
+                        // variant='secondary'
                         style={ButtonStyle}
+                        active={activeTab === "ouritems"}
 
                         onClick={() => setActiveTab("ouritems")}
                     >
@@ -117,8 +126,9 @@ const AdminPage = (props) => {
                     </Row>
                     <Row className="mb-3">
                     <Button
-                        variant='secondary'
+                        // variant='secondary'
                         style={ButtonStyle}
+                        active={activeTab === "sites"}
 
                         onClick={() => setActiveTab("sites")}
 

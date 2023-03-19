@@ -32,6 +32,10 @@ const NavBar = (props) => {
         >
                 <div
                     className='mx-5'
+                    style={{
+                        fontSize:"larger",
+                        fontWeight:"bolder"
+                    }}
                 >
                     ШТАБЕЛЬ
                 </div>

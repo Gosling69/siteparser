@@ -58,7 +58,7 @@ import NavBar from "../../Components/NavBar"
                                     }} 
                                     onClick={() => setActiveItem(index)} 
                                 >
-                                    <Col  className="pr-0 itemNameCol" xs={6} >
+                                    <Col  className="pr-0" xs={6} >
                                         {el.name}
                                     </Col>
                                     <Col className="d-flex justify-content-center" >
@@ -69,12 +69,7 @@ import NavBar from "../../Components/NavBar"
                                         icon="link"
                                         onClick={() => window.open(el.item_link, "_blank")} 
                                     />
-                                    {/* <UilExternalLinkAlt 
-                                        onClick={() => window.open(el.item_link, "_blank")} 
-                                        size="40" 
-                                        color="#6F7888" 
-                                        className="yellowhover"
-                                    /> */}
+                                 
                                     </Col>
                                 </Row>  
                             )
