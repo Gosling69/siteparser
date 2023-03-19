@@ -19,6 +19,29 @@ body {
   padding-right: 40px;
   background-color: #EEECE4 !important;
 }
+.successrow {
+  color: #70C89F;
+}
+.itemNameCol{
+  cursor: default;
+  display: block;
+  width: 190px;
+  /* color: #61dafb; */
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.linkicon{
+  cursor: pointer;
+}
+svg:hover path {
+  fill: black;
+  transition: all ease 0.3s;
+}
+
+svg path {
+  transition: all ease 0.3s;
+}
 .stickme {
   top: 16px;
   position: sticky;

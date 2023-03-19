@@ -4,7 +4,7 @@ import {Row, Col, Nav, Tab, Form} from "react-bootstrap"
 import {Button} from "devextreme-react"
 import StoreCard from "../../Components/StoreCard"
 import NavBar from "../../Components/NavBar"
- 
+import UilExternalLinkAlt from '@iconscout/react-unicons/icons/uil-external-link-alt'
  const PriceCompare = (props) => {
 
     const [items, setItems] = useState([])
@@ -30,7 +30,7 @@ import NavBar from "../../Components/NavBar"
             <Row className="mt-3 mx-1">
                 <Col 
                     className="navcol"
-                    xs={3}
+                    xs={4}
                 >
                     <div className="stickme">
                     <Form.Control
@@ -59,25 +59,18 @@ import NavBar from "../../Components/NavBar"
                                     }} 
                                     onClick={() => setActiveItem(index)} 
                                 >
-                                    <Col style={{
-                                        "display": "block",
-                                        "width": "190px",
-                                        "overflow": "hidden",
-                                        'whiteSpace': "nowrap",
-                                        "textOverflow": "ellipsis",
-                                        
-                                    }} className="pr-0" xs={6} >
+                                    <Col  className="pr-0 itemNameCol" xs={6} >
                                         {el.name}
                                     </Col>
                                     <Col className="d-flex justify-content-center" >
                                         {`${el.last_price} р`}
                                     </Col>
                                     <Col xs={2} className="d-flex justify-content-end" >
-                                    <Button
-                                        height={"40px"}
-                                        icon="link"
-                                        onClick={() => window.open(el.item_link, "_blank")} variant="primary"
-                                        
+                                    <UilExternalLinkAlt 
+                                        onClick={() => window.open(el.item_link, "_blank")} 
+                                        size="40" 
+                                        color="#6F7888" 
+                                        className="yellowhover"
                                     />
                                     </Col>
                                 </Row>  
@@ -89,9 +82,9 @@ import NavBar from "../../Components/NavBar"
                 <Tab.Content>
                     {items.map((el, index) =>
                          <Tab.Pane eventKey={index}>
-                            <Row xs={2} md={4}  lg={5}>
+                            <Row  xs={1} sm={2} md={2} lg={3}>
                             {el.linked_items.map(item =>
-                                <Col  >
+                                <Col >
                                 <StoreCard
                                     item={item}
                                     ourPrice={el.last_price}
