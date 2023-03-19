@@ -4,7 +4,6 @@ import {Row, Col, Nav, Tab, Form} from "react-bootstrap"
 import {Button} from "devextreme-react"
 import StoreCard from "../../Components/StoreCard"
 import NavBar from "../../Components/NavBar"
-import UilExternalLinkAlt from '@iconscout/react-unicons/icons/uil-external-link-alt'
  const PriceCompare = (props) => {
 
     const [items, setItems] = useState([])
@@ -66,12 +65,16 @@ import UilExternalLinkAlt from '@iconscout/react-unicons/icons/uil-external-link
                                         {`${el.last_price} р`}
                                     </Col>
                                     <Col xs={2} className="d-flex justify-content-end" >
-                                    <UilExternalLinkAlt 
+                                    <Button
+                                        icon="link"
+                                        onClick={() => window.open(el.item_link, "_blank")} 
+                                    />
+                                    {/* <UilExternalLinkAlt 
                                         onClick={() => window.open(el.item_link, "_blank")} 
                                         size="40" 
                                         color="#6F7888" 
                                         className="yellowhover"
-                                    />
+                                    /> */}
                                     </Col>
                                 </Row>  
                             )

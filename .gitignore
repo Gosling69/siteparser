@@ -3,3 +3,5 @@ mongodb/*
 
 # exception to the rule
 !mongodb/.gitkeep 
+
+/node_modules

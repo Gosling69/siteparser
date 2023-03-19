@@ -1,7 +1,7 @@
 
 import { useState } from "react"
 import {Card, Row, Col,OverlayTrigger, Tooltip} from "react-bootstrap"
-import UilExternalLinkAlt from '@iconscout/react-unicons/icons/uil-external-link-alt'
+import {Button} from "devextreme-react"
 
 
 const StoreCard = (props) => {
@@ -65,19 +65,13 @@ const StoreCard = (props) => {
                     Ссылка на товар в магазине
                 </Col>
                 <Col xs={3}>
-                    <UilExternalLinkAlt 
-                        className="linkicon"
-                        onClick={() => window.open(item.item_link, "_blank")} 
-                        size="40" 
-                        color="#6F7888" 
-                        
-                    />
-                    {/* <Button 
+                    
+                    <Button 
                         icon="link"
                         onClick={() => window.open(item.item_link, "_blank")} 
                         // variant="primary"
                     >
-                    </Button> */}
+                    </Button>
                 </Col>
             </Row>    
             </Card.Footer>
