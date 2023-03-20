@@ -368,7 +368,7 @@ def get_one_item(item_id: str = None, init_date: str = None, end_date: str = Non
         pipeline = [
         {
             u"$match": {
-                u"_id": ObjectId("6409ab4d2d5e52ed6a43139f")
+                u"_id": ObjectId(f"{item_id}")
             }
         }, 
         {
