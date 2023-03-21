@@ -71,6 +71,22 @@ def get_one_item():
     
     return item
 
+@app.route('/delete_item', methods=['DELETE'])
+def delete_item():
+    item_id = request.args.get('item_id')
+    return mongo.delete_item(item_id)
+
+
+@app.route('/delete_site', methods=['DELETE'])
+def delete_site():
+    site_id = request.args.get('site_id')
+    return mongo.delete_site(site_id)
+
+
+@app.route('/delete_our_item', methods=['DELETE'])
+def delete_our_item():
+    our_item_id = request.args.get('our_item_id')
+    return mongo.delete_our_item(our_item_id)
 
 
 @app.route('/get_sites', methods=['GET'])

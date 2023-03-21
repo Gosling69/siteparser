@@ -407,3 +407,88 @@ def get_one_item(item_id: str = None, init_date: str = None, end_date: str = Non
     except ValueError:
         return "ERROR: Wrong type of arguments \"init_date\" or \"end_date\""
     return result
+
+@database_connector
+def delete_item(item_id: str):
+
+    #pipeline to copy selected item to dump collection
+    pipeline = [
+        {
+            u"$match": {
+                u"_id": ObjectId(f"{item_id}")
+            }
+        }, 
+        {
+            u"$merge": {
+                u"into": u"dump_item"
+            }
+        }
+    ]
+
+    Item.objects().aggregate(pipeline)
+    #saving selected item to check if we already deleted it
+    to_delete = Item.objects(id = ObjectId(f"{item_id}"))
+    
+    if len(to_delete) == 0:
+        return f"ERROR: item with id {item_id} doesn't exist"
+    
+    to_delete.delete()
+    return f"deleted item with id {item_id}"
+
+
+@database_connector
+def delete_site(site_id: str):
+
+    #pipeline to copy selected site to dump collection
+    pipeline = [
+        {
+            u"$match": {
+                u"_id": ObjectId(f"{site_id}")
+            }
+        }, 
+        {
+            u"$merge": {
+                u"into": u"dump_site"
+            }
+        }
+    ]
+
+    Site.objects().aggregate(pipeline)
+
+    #saving selected site to check if we already deleted it
+    to_delete = Site.objects(id = ObjectId(f"{site_id}"))
+    
+    if len(to_delete) == 0:
+        return f"ERROR: site with id {site_id} doesn't exist"
+    
+    to_delete.delete()
+    return f"deleted site with id {site_id}"
+
+
+@database_connector
+def delete_our_item(our_item_id: str):
+
+    #pipeline to copy selected our_item to dump collection
+    pipeline = [
+        {
+            u"$match": {
+                u"_id": ObjectId(f"{our_item_id}")
+            }
+        }, 
+        {
+            u"$merge": {
+                u"into": u"dump_our_item"
+            }
+        }
+    ]
+
+    OurItem.objects().aggregate(pipeline)
+
+    #saving selected our_item to check if we already deleted it
+    to_delete = OurItem.objects(id = ObjectId(f"{our_item_id}"))
+    
+    if len(to_delete) == 0:
+        return f"ERROR: our item with id {our_item_id} doesn't exist"
+    
+    to_delete.delete()
+    return f"deleted our item with id {our_item_id}"
