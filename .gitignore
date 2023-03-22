@@ -5,3 +5,4 @@ mongodb/*
 !mongodb/.gitkeep 
 
 /node_modules
+*.xlsx

@@ -9,15 +9,26 @@ services:
     restart: always
     # command: "--bind_ip_all --replSet rs0"
   api:
+    container_name: api
     build: 
         context: ./backend
         dockerfile: Dockerfile
     # command: flask run
     ports:
         - "5000:5000"
+    restart: always
+
     # environment:
     #     MONGODB_HOST: mongodb
     #     MONGODB_USERNAME: "apiuser"
     #     MONGODB_PASSWORD: "apipassword"
     depends_on: 
         - mongo
+  # client:
+  #   build: 
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "3000:80"
+  #   restart: always
+

@@ -76,5 +76,18 @@ export default class ApiService {
     static async updateSite() {
         
     }
+    static async importItems(itemsList) {
+        let response = await axios.post(ApiService.endpoint + "/import_items", {data:itemsList})
+        return response.data
+    }
+    static async importOurItems(itemsList) {
+        let response = await axios.post(ApiService.endpoint + "/import_our_items", {data:itemsList})
+        return response.data
+    }
+    static async initStandartSites() {
+        let response = await axios.post(ApiService.endpoint + "/init_standart_sites",{})
+        return response.data
+    }
+    
     
 }

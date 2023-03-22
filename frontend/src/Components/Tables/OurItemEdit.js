@@ -1,15 +1,19 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import DataGrid, {
     Column,
-    FormItem,
+    Popup,
+    Item,
+    Form,
     Editing,
-    Scrolling,
+    Button,
     Lookup,
   } from 'devextreme-react/data-grid';
 import 'devextreme-react/text-area';
-import LinkedItemsTagbox from "./LinkedItemsTagbox";
-import ApiService from "../Api/api";
-  
+import LinkedItemsTagbox from "../LinkedItemsTagbox";
+import ApiService from "../../Api/api";
+import CommonToolbar from "../Toolbars/CommonToolbar";
+import LinkCell from "../CellRenders/LinkCell";
+import EditDeleteIcons from "../EditDeleteIcons";
 
 const OurItemEdit = (props) => {
 
@@ -24,31 +28,52 @@ const OurItemEdit = (props) => {
 
     const [ourItems,setOurItems] = useState(props.ourItems)
     // const [sites, setSites] = useState(props.sites)
+    let gridRef = useRef(null);
 
     useEffect(() =>{
         setOurItems(props.ourItems)
     },[props.ourItems])
 
-    const notesEditorOptions = { height: 100 };
 
     return(
+        <>
+        <CommonToolbar
+            addRow={() => gridRef.instance.addRow()}
+            importFromXlsx={ApiService.importOurItems}
+            refresh={props.refresh}
+            type="ouritem"
+        />
         <DataGrid
             dataSource={ourItems}
             keyExpr="_id"
-            showBorders={true}
-            height={700}
+            showColumnLines={false}
+            showRowLines={false}
+            showBorders={false}
+            allowColumnResizing={true}
+            rowAlternationEnabled={true}
+            height={550}
+            ref={(ref) => { gridRef = ref}}
             onRowUpdated={(e) =>  ApiService.updateOurItem(e.data).then(() => props.refresh())}
             onRowRemoved={(e) => console.log(e)}
             onRowInserted={(e) => ApiService.addOurItem(e.data).then(() => props.refresh())}
         >
-        <Editing
-            mode="form"
-            allowUpdating={true}
-            allowAdding={true}
-            allowDeleting={true}
-        />
+         <Editing
+            mode="popup"
+            // allowUpdating={true}
+            // useIcons={true}
+        >
+        <Popup title="Our Item Info"  showTitle={true} width={800} height={400} />
+        <Form>
+            <Item itemType="group" colCount={1} colSpan={2}>
+                <Item dataField="name" />
+                <Item dataField="item_link" />
+                <Item dataField="linked_items_ids" />
+            </Item>
+         
+        </Form>
+        </Editing>
         <Column dataField="name" />
-        <Column dataField="item_link"/>
+        <Column dataField="item_link" сellRender={data => <LinkCell data={data}/>}/>
         <Column
             dataField="linked_items_ids"
             caption="Linked Items"
@@ -66,10 +91,22 @@ const OurItemEdit = (props) => {
             //   displayExpr="name"
             />
             {/* <RequiredRule /> */}
-          </Column>
+        </Column>
+        <Column 
+            width={100} 
+            cellRender={
+                    data => 
+                    <EditDeleteIcons 
+                        editRow={gridRef.instance.editRow} 
+                        deleteRow={gridRef.instance.deleteRow} 
+                        data={data}
+                    />
+                }
+            >
+        </Column>
         {/* <Scrolling mode="virtual"  rowRenderingMode="virtual"  /> */}
-            <FormItem colSpan={2} editorType="dxTextArea" editorOptions={notesEditorOptions} />
         </DataGrid>
+        </>
     )
 
 }

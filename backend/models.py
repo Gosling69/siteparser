@@ -1,15 +1,26 @@
 from mongoengine import *
 from enum import Enum
 import datetime
+class ErrorLevel(Enum):
+    MINOR = 'minor'
+    AVERAGE = 'average'
+    SEVERE = 'severe'
+
+class DriverType(Enum):
+    SELENIUM = 'selenium'
+    REGULAR = 'regular'
+
+class Error(Document):
+    description = StringField()
+    arguments = ListField()
+    level = EnumField(ErrorLevel, default=ErrorLevel.MINOR)
+    date_time = DateTimeField(default=datetime.datetime.utcnow)
+
 
 class ParseData(EmbeddedDocument):
     price = IntField()
     quantity = IntField()
     date_time = DateTimeField(default=datetime.datetime.utcnow)
-
-class DriverType(Enum):
-    SELENIUM = 'selenium'
-    REGULAR = 'regular'
 
 class PipeElement(EmbeddedDocument):
     target = StringField()

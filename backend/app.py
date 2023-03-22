@@ -8,6 +8,8 @@ import site_parser
 import mongo
 import json
 
+
+
 app = Flask(__name__)
 CORS(app)
 
@@ -38,7 +40,7 @@ def scheduleTask():
 
 
 scheduler.add_listener(listener, EVENT_JOB_EXECUTED | EVENT_JOB_MISSED | EVENT_JOB_ERROR)
-scheduler.add_job(id = 'Scheduled Task', func=scheduleTask, trigger="interval", hours=1)
+scheduler.add_job(id = 'Scheduled Task', func=scheduleTask, trigger="interval", hours=1, max_instances=1)
 scheduler.start()
 
 # @socketio.on('connect')
@@ -49,7 +51,7 @@ scheduler.start()
 @app.route('/run_update', methods=['POST'])
 def run_update():
     if not is_job_running.status:
-        scheduleTask()
+        scheduler.get_job(id ="Scheduled Task").modify(next_run_time=datetime.datetime.now())
         return "OK"
     else:
         return "Already running"
@@ -111,6 +113,7 @@ def update_site():
 def get_our_items():
     items = mongo.get_our_items_with_linked()
     return items
+
 @app.route('/get_our_items_no_aggr', methods=['GET'])
 def get_our_items_no_aggr():
     items = mongo.get_our_items()
@@ -159,10 +162,30 @@ def link_item():
     mongo.link_items(enemy_item_id, our_item_id)    
     return 'Hello, World!'
 
-@app.route('/init_data', methods=['PUT'])
-def init_data():
-    site_parser.export_from_xlsx()
+@app.route('/import_items', methods=['POST'])
+def import_items():
+    data = request.json["data"]
+    print(data)
+    for item in data:
+        new_item = Item.from_json(json_data=json.dumps(item))
+        mongo.add_item(new_item)    
     return 'Hello, World!'
+
+@app.route('/import_our_items', methods=['POST'])
+def import_our_items():
+    data = request.json["data"]
+    print(data)
+    for our_item in data:
+        new_item = OurItem.from_json(json_data=json.dumps(our_item))
+        mongo.add_item(new_item)    
+    return 'Hello, World!'
+
+@app.route('/init_standart_sites', methods=['POST'])
+def init_standart_sites():
+    mongo.init_standart_sites()
+    return 'Hello, World!'
+
+
 
 # if __name__ == '__main__':
 app.run(host="0.0.0.0", port=5000)

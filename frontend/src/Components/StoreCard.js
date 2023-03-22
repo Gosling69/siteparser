@@ -1,7 +1,7 @@
 
 import { useState } from "react"
 import {Card, Row, Col,OverlayTrigger, Tooltip} from "react-bootstrap"
-import {Button} from "devextreme-react"
+import UilExternalLinkAlt from '@iconscout/react-unicons/icons/uil-external-link-alt'
 
 
 const StoreCard = (props) => {
@@ -10,6 +10,9 @@ const StoreCard = (props) => {
     const [variant, setVariant] = useState(props.ourPrice < item.last_price ? "success" : "danger")
     const triangleUp ="\u25B2"
     const triangleDown ="\u25BC"
+    const successColor = "#70C89F"
+    const dangerColor = "#ED7582"
+
     return(
             <Card
                 bg={variant}
@@ -39,8 +42,6 @@ const StoreCard = (props) => {
                     {item.name}
                 </Col>
                 </OverlayTrigger >
-
-                
                 <Col xs={1}></Col>
                 <Col style={{"textAlign":"center", "fontSize":"large"}} xs={4}>
                     {`${item.last_price} р`}
@@ -61,12 +62,12 @@ const StoreCard = (props) => {
                     Ссылка на товар в магазине
                 </Col>
                 <Col xs={3}>
-                    <Button 
-                        icon="link"
-                        onClick={() => window.open(item.item_link, "_blank")} 
-                        // variant="primary"
-                    >
-                    </Button>
+                <UilExternalLinkAlt
+                    className="clickIcon"
+                    size="50" 
+                    color={variant === "success" ? successColor : dangerColor}
+                    onClick={() => window.open(item.item_link, "_blank")} 
+                />
                 </Col>
             </Row>    
             </Card.Body>
