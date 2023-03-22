@@ -11,11 +11,11 @@ import DataGrid, {
 
   } from 'devextreme-react/data-grid';
   import 'devextreme-react/text-area';
-import ApiService from "../Api/api";
+import ApiService from "../../Api/api";
 import {Row, Col, } from "react-bootstrap"
-import CommonToolbar from "./CommonToolbar";
-import LinkCell from "./LinkCell";
-import EditDeleteIcons from "./EditDeleteIcons";
+import CommonToolbar from "../Toolbars/CommonToolbar";
+import LinkCell from "../CellRenders/LinkCell";
+import EditDeleteIcons from "../EditDeleteIcons";
 
 
 const ItemEdit = (props) => {
@@ -39,6 +39,9 @@ const ItemEdit = (props) => {
         <>
         <CommonToolbar
             addRow={() => gridRef.instance.addRow()}
+            importFromXlsx={ApiService.importItems}
+            refresh={props.refresh}
+            type="item"
         />
         <DataGrid
             dataSource={items}
@@ -48,7 +51,7 @@ const ItemEdit = (props) => {
             showRowLines={false}
             showBorders={false}
             rowAlternationEnabled={true}
-            height={650}
+            height={550}
             ref={(ref) => { gridRef = ref}}
             onRowUpdated={(e) => ApiService.updateItem(e.data).then(() => props.refresh())}
             onRowRemoved={(e) => console.log(e)}
@@ -96,17 +99,10 @@ const ItemEdit = (props) => {
                     <EditDeleteIcons 
                         editRow={gridRef.instance.editRow} 
                         deleteRow={gridRef.instance.deleteRow} 
-
                         data={data}
                     />
                 }
             >
-          
-            {/* <Button name="edit"/>
-            <Button name="delete"/> */}
-
-           
-
         </Column>
         {/* <Scrolling mode="virtual" /> */}
         {/* <FormItem colSpan={2} editorType="dxTextArea" editorOptions={notesEditorOptions} /> */}

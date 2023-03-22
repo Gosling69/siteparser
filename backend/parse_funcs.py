@@ -32,6 +32,7 @@ def parse_selenium(item:dict, site: Site) -> Tuple[int, int]:
             target.send_keys(pipeElement.action_args)
         elif pipeElement.action == "remove":
             time.sleep(1)
+            
             target =  driver.find_element(by=By.CSS_SELECTOR, value=pipeElement.target)
             # element = driver.find_element_by_class_name('classname')
             driver.execute_script("""

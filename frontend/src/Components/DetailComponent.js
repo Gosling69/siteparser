@@ -45,7 +45,7 @@ const DetailComponent = (props) => {
                     </Label>
                     </Crosshair>
                     <Legend visible={false} />
-                    <Tooltip enabled={true} />
+                    <Tooltip  enabled={true} />
                 </Chart>
             </Col>
             <Col>

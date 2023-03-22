@@ -7,7 +7,7 @@ import DataGrid, {
     Lookup,
   } from 'devextreme-react/data-grid';
   import 'devextreme-react/text-area';
-  import CommonToolbar from "./CommonToolbar";
+  import CommonToolbar from "../Toolbars/CommonToolbar";
   
 
 const SiteEdit = (props) => {
@@ -25,6 +25,9 @@ const SiteEdit = (props) => {
         <>
         <CommonToolbar
             addRow={() => gridRef.instance.addRow()}
+            type="site"
+            refresh={props.refresh}
+            importFromXlsx={() => window.alert("Рано")}
         />
         <DataGrid
             dataSource={sites}
@@ -35,7 +38,7 @@ const SiteEdit = (props) => {
             showBorders={false}
             rowAlternationEnabled={true}
             ref={(ref) => { gridRef = ref}}
-            height={650}
+            height={550}
             onRowUpdated={(e) => console.log(e)}
         >
         <Editing

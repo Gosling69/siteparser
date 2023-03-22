@@ -9,11 +9,11 @@ import DataGrid, {
     Lookup,
   } from 'devextreme-react/data-grid';
 import 'devextreme-react/text-area';
-import LinkedItemsTagbox from "./LinkedItemsTagbox";
-import ApiService from "../Api/api";
-import CommonToolbar from "./CommonToolbar";
-import LinkCell from "./LinkCell";
-import EditDeleteIcons from "./EditDeleteIcons";
+import LinkedItemsTagbox from "../LinkedItemsTagbox";
+import ApiService from "../../Api/api";
+import CommonToolbar from "../Toolbars/CommonToolbar";
+import LinkCell from "../CellRenders/LinkCell";
+import EditDeleteIcons from "../EditDeleteIcons";
 
 const OurItemEdit = (props) => {
 
@@ -39,6 +39,9 @@ const OurItemEdit = (props) => {
         <>
         <CommonToolbar
             addRow={() => gridRef.instance.addRow()}
+            importFromXlsx={ApiService.importOurItems}
+            refresh={props.refresh}
+            type="ouritem"
         />
         <DataGrid
             dataSource={ourItems}
@@ -48,7 +51,7 @@ const OurItemEdit = (props) => {
             showBorders={false}
             allowColumnResizing={true}
             rowAlternationEnabled={true}
-            height={650}
+            height={550}
             ref={(ref) => { gridRef = ref}}
             onRowUpdated={(e) =>  ApiService.updateOurItem(e.data).then(() => props.refresh())}
             onRowRemoved={(e) => console.log(e)}

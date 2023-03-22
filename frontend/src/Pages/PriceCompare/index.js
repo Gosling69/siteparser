@@ -3,7 +3,7 @@ import ApiService from "../../Api/api"
 import {Row, Col, Nav, Tab, Form} from "react-bootstrap"
 import {Button} from "devextreme-react"
 import StoreCard from "../../Components/StoreCard"
-import NavBar from "../../Components/NavBar"
+import NavBar from "../../Components/Toolbars/NavBar"
 import UilExternalLinkAlt from '@iconscout/react-unicons/icons/uil-external-link-alt'
 
  const PriceCompare = (props) => {

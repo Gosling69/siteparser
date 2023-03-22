@@ -7,6 +7,7 @@ from bson.json_util import dumps
 from bson.objectid import ObjectId
 from datetime import datetime
 import parse_funcs
+import json
 
 MONGO_HOST = "mongo"
 MONGO_PORT = 27017
@@ -19,6 +20,105 @@ def database_connector(func):
         disconnect('test')
         return result
     return wrapper_database_connector
+
+@database_connector
+def init_standart_sites():
+    site_list = [
+        {
+            "url" : "https://xn--80afpacjdwcqkhfi.xn--p1ai",
+            "path_to_price" : {
+                "name" : "span",
+                "class_" : "price_value"
+            },
+            "path_to_quantity" : {
+                "name" : "span",
+                "class_" : "plus"
+            },
+            "driver_type" : "regular",
+            "actions" : [
+
+            ],
+            "name" : "СтройЛогистика"
+        },
+        {
+            "url" : "https://irkutsk.pechnoy-mir.ru",
+            "path_to_price" : {
+                "name" : "span",
+                "class_" : "price_value"
+            },
+            "path_to_quantity" : {
+                "name" : "span",
+                "class_" : "plus"
+            },
+            "driver_type" : "regular",
+            "actions" : [
+
+            ],
+            "name" : "Печной Мир"
+        },
+        {
+            "url" : "https://www.xn--38-vlcai5ag2d.xn--p1ai",
+            "path_to_price" : {
+                "name" : "i",
+                "class_" : "bp-price"
+            },
+            "path_to_quantity" : {
+
+            },
+            "driver_type" : "regular",
+            "actions" : [
+
+            ],
+            "name" : "НашКирпич"
+        },
+        {
+            "url" : "https://shop.palp-nord.ru",
+            "path_to_price" : {
+                "by" : "class name",
+                "value" : "single_item_price"
+            },
+            "path_to_quantity" : {
+
+            },
+            "driver_type" : "selenium",
+            "actions" : [
+                {
+                    "target" : "body > jdiv",
+                    "action" : "remove",
+                    "action_args" : ""
+                },
+                {
+                    "target" : "#input-quantity",
+                    "action" : "send_keys",
+                    "action_args" : "10000000"
+                },
+                {
+                    "target" : "#add_to_cart",
+                    "action" : "click",
+                    "action_args" : ""
+                },
+                {
+                    "target" : "",
+                    "action" : "sleep",
+                    "action_args" : "1"
+                },
+                {
+                    "target" : "",
+                    "action" : "switch_to_alert",
+                    "action_args" : ""
+                }
+            ],
+            "name" : "ПалпНарод"
+        }
+    ]
+    for site in site_list:
+        new_site = Site.from_json(json_data=json.dumps(site))
+        if Site.objects(url=new_site.url).count() == 0:
+            new_site.save()
+        else:
+            print(new_site.url, "ALREADY THERE")
+
+
 
 
 @database_connector
@@ -70,7 +170,7 @@ def add_item(entry: Union[Item, OurItem]) -> dict:
         if quantity != -1 and price != -1:
             add_data_to_item(entry.pk.__str__(), ParseData(quantity=quantity, price=price))
     else:
-        update_dict = parse_funcs.parse_our_site(entry, entry_site)
+        update_dict = parse_funcs.parse_our_site(entry, [entry_site])
         update_our_item(update_dict)
     return {}
 

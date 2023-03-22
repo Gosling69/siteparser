@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react"
 import ApiService from "../../Api/api"
 import {Row, Col, Form, Button, Nav, InputGroup, Dropdown, DropdownButton, Offcanvas, Tab, Tabs } from "react-bootstrap"
-import LinkItemsComponent from "../../Components/LinkItemsComponent"
-import ItemEdit from "../../Components/ItemEdit"
-import OurItemEdit from "../../Components/OurItemEdit"
-import SiteEdit from "../../Components/SiteEdit"
-import NavBar from "../../Components/NavBar"
+import ItemEdit from "../../Components/Tables/ItemEdit"
+import OurItemEdit from "../../Components/Tables/OurItemEdit"
+import SiteEdit from "../../Components/Tables/SiteEdit"
+import NavBar from "../../Components/Toolbars/NavBar"
 
 const AdminPage = (props) => {
 

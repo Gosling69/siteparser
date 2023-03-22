@@ -10,11 +10,10 @@ import DataGrid,
 import {Row, Col} from "react-bootstrap"
 import { useEffect, useState } from "react"
 import ApiService from "../../Api/api"
-import ChartCell from '../../Components/ChartCell';
-import LinkCell from '../../Components/LinkCell';
-import NavBar from '../../Components/NavBar';
-import DateToolbar from '../../Components/DateToolbar';
-
+import ChartCell from '../../Components/CellRenders/ChartCell';
+import LinkCell from '../../Components/CellRenders/LinkCell';
+import NavBar from '../../Components/Toolbars/NavBar';
+import DateToolbar from '../../Components/Toolbars/DateToolbar';
 const QuantityCompare = (props) => {
 
     const [items, setItems] = useState([])
@@ -111,7 +110,7 @@ const QuantityCompare = (props) => {
                 showBorders={false}
                 allowColumnResizing={true}
                 rowAlternationEnabled={true}
-                height={600}
+                height={550}
             >
             <Column dataField="name" cellRender={data => <ChartCell initDate={initDate} endDate={endDate} data={data} />}/>
             <Column dataField="site.name" cellRender={data => <LinkCell data={data}/>} />

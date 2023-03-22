@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
-import DetailComponent from './DetailComponent';
+import DetailComponent from '../DetailComponent';
 import {Button} from "devextreme-react"
 import UilChartLine from '@iconscout/react-unicons/icons/uil-chart-line'
 
 import {Row,Col} from "react-bootstrap"
-import DateToolbar from './DateToolbar';
+import DateToolbar from '../Toolbars/DateToolbar';
 
 const ChartCell = (props) => {
     const [show, setShow] = useState(false);
@@ -69,7 +69,7 @@ const ChartCell = (props) => {
             </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-            <Row className='mb-3'>
+            <Row className='mb-3'>  
                 <Col></Col>
                 <Col xs={6}>
                 <DateToolbar

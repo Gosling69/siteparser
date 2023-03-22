@@ -2,14 +2,13 @@
 import mongo
 import parse_funcs
 from models import *
-import pandas as pd
 import time
+from errors import ErrorHandler
 
 
+OUR_URL = "https://www.xn--38-vlcai5ag2d.xn--p1ai"
 
-INIT_DATA_NAME = "init_data.xlsx"
-
-
+@ErrorHandler
 def parse_enemy_site(item:dict, site: Site):
     quantity, price = -1, -1
     if site.driver_type == DriverType.REGULAR:
@@ -31,10 +30,15 @@ def parse_sites():
     for item in items:
         target_site = [site for site in sites if site.pk.__str__() == item["site"]["_id"]["$oid"] ]
         if len(target_site) == 1:
+            # try:
             parse_enemy_site(item, target_site[0])
+            # except Exception as e:
+                # print(item["item_link"], e)
+
+# parse_sites()
 def update_our_items():
     our_items = mongo.get_our_items()
-    our_site = mongo.get_sites({"url":"https://www.xn--38-vlcai5ag2d.xn--p1ai"})
+    our_site = mongo.get_sites({"url":OUR_URL})
     if len(our_site) == 0:
         print("OUR SITE NOT FOUND")
         return
@@ -56,28 +60,5 @@ def update_our_items():
 # update_our_items()
 # time.sleep(60)
 # update_our_items(10,20)
-def export_from_xlsx():
-    xl = pd.ExcelFile(INIT_DATA_NAME)
-    for i in range(2):
-        dataframe = pd.read_excel(INIT_DATA_NAME, sheet_name=xl.sheet_names[i])
-        names = dataframe['Name'].values
-        links = dataframe['Link'].values
-        for i in range(len(names)):
-            new_item = Item(
-                name = names[i],
-                item_link = links[i]
-            )
-            mongo.add_item(new_item)
-            
-def export_our_from_xlsx():
-    xl = pd.ExcelFile(INIT_DATA_NAME)
-    dataframe = pd.read_excel(INIT_DATA_NAME, sheet_name=xl.sheet_names[3])
-    names = dataframe['Name'].values
-    links = dataframe['Link'].values
-    for i in range(len(names)):
-        new_item = OurItem(
-            name = names[i],
-            item_link = links[i]
-        )
-        mongo.add_item(new_item)
+
 # export_our_from_xlsx()

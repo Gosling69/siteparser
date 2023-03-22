@@ -7,9 +7,8 @@ import {
   Route
 } from "react-router-dom";
 
-import HomePage from './Pages/Home';
 import AdminPage from './Pages/Admin';
-import NavBar from './Components/NavBar';
+import NavBar from './Components/Toolbars/NavBar';
 import PriceCompare from './Pages/PriceCompare';
 import QuantityCompare from './Pages/QuantityCompare';
 
