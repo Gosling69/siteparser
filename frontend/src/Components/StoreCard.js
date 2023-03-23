@@ -6,12 +6,22 @@ import UilExternalLinkAlt from '@iconscout/react-unicons/icons/uil-external-link
 
 const StoreCard = (props) => {
 
+    const calcVariant = () => {
+        if (props.ourPrice < item.last_price) return "success"
+        if (props.ourPrice > item.last_price) return "danger"
+        if (props.ourPrice === item.last_price) return "secondary"
+    }
+
+   
+
     const [item, setItem] = useState(props.item)
-    const [variant, setVariant] = useState(props.ourPrice < item.last_price ? "success" : "danger")
+    const [variant, setVariant] = useState(calcVariant())
     const triangleUp ="\u25B2"
     const triangleDown ="\u25BC"
     const successColor = "#70C89F"
     const dangerColor = "#ED7582"
+    const noneColor = "#CACDD1"
+
 
     return(
             <Card

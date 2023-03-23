@@ -11,12 +11,12 @@ const EditDeleteIcons = (props) => {
                 color="#6F7888"
                 onClick={() =>  props.editRow(props.data.rowIndex)}
             />
-            {/* <UilTrash
+            <UilTrash
                 className="clickIcon"
                 size="24" 
                 color="#6F7888"
                 onClick={() =>  props.deleteRow(props.data.rowIndex)}
-            /> */}
+            />
         </>
     )
 }

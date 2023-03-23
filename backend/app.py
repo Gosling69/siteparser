@@ -7,6 +7,7 @@ from models import *
 import site_parser
 import mongo
 import json
+from errors import ErrorHandler
 
 
 
@@ -25,18 +26,25 @@ is_job_running = BoolWrap()
 
 scheduler = APScheduler()
 
+def scheduleDecorator(func):
+    def InnerFunc(*args, **kwargs):
+        is_job_running.set_status(True)
+        print("PARSING SITES")
+        func(*args, **kwargs)
+        print("DONE")
+        is_job_running.set_status(False)
+    return InnerFunc
+
+
 def listener(event):
     is_job_running.set_status(False)
     print(f'Job {event.job_id} raised {event.exception.__class__.__name__}')
 
-
+@scheduleDecorator
 def scheduleTask():
-    is_job_running.set_status(True)
-    print("PARSING SITES")
     site_parser.parse_sites()
     site_parser.update_our_items()
-    print("DONE")
-    is_job_running.set_status(False)
+
 
 
 scheduler.add_listener(listener, EVENT_JOB_EXECUTED | EVENT_JOB_MISSED | EVENT_JOB_ERROR)
@@ -73,22 +81,19 @@ def get_one_item():
     
     return item
 
-@app.route('/delete_item', methods=['DELETE'])
-def delete_item():
-    item_id = request.args.get('item_id')
-    return mongo.delete_item(item_id)
+@app.route('/delete_item/<id>', methods=['DELETE'])
+def delete_item(id):
+    return mongo.delete_item(id)
 
 
-@app.route('/delete_site', methods=['DELETE'])
-def delete_site():
-    site_id = request.args.get('site_id')
-    return mongo.delete_site(site_id)
+@app.route('/delete_site/<id>', methods=['DELETE'])
+def delete_site(id):
+    return mongo.delete_site(id)
 
 
-@app.route('/delete_our_item', methods=['DELETE'])
-def delete_our_item():
-    our_item_id = request.args.get('our_item_id')
-    return mongo.delete_our_item(our_item_id)
+@app.route('/delete_our_item/<id>', methods=['DELETE'])
+def delete_our_item(id):
+    return mongo.delete_our_item(id)
 
 
 @app.route('/get_sites', methods=['GET'])
@@ -153,13 +158,6 @@ def update_item():
     raw_item = request.json["item"]
     # entry = Item(**raw_item)
     mongo.update_item(raw_item)
-    return 'Hello, World!'
-
-@app.route('/link_item', methods=['PUT'])
-def link_item():
-    our_item_id = request.json["our_item_id"]
-    enemy_item_id = request.json["enemy_item_id"]
-    mongo.link_items(enemy_item_id, our_item_id)    
     return 'Hello, World!'
 
 @app.route('/import_items', methods=['POST'])

@@ -50,7 +50,7 @@ const UploadModal = (props) => {
           <Button variant="secondary" onClick={props.clearData}>
             Cancel
           </Button>
-          <Button disabled={loading} variant="primary" onClick={() => {setLoading(true); props.importFromXlsx()}}>
+          <Button variant="primary" onClick={() => {props.importFromXlsx()}}>
             Send
           </Button>
         </Modal.Footer>

@@ -11,7 +11,21 @@ import UilExternalLinkAlt from '@iconscout/react-unicons/icons/uil-external-link
     const [items, setItems] = useState([])
     const [nameFilter, setNameFilter] = useState("")
     const [activeItem, setActiveItem] = useState("")
+    
+    const successColor = "#198754"
+    const dangerColor = "#DC3545"
+    const noneColor = "#CACDD1"
 
+    const setColor = (priceList, ourLastPrice) => {
+        if (!priceList.length) return noneColor
+        if (priceList.some((elem) => elem > ourLastPrice)) {
+            return successColor
+        }
+        if(priceList.some((elem) => elem < ourLastPrice)) {
+            return dangerColor
+        }
+        return "black"
+    }
 
     useEffect(() => {
         ApiService.getOurItems()
@@ -48,7 +62,8 @@ import UilExternalLinkAlt from '@iconscout/react-unicons/icons/uil-external-link
                     .map((el, index) =>
                         {
                             let prices = el.linked_items.map(el => el.last_price)
-                            let color = !prices.length? "black" : prices.some((elem) => elem > el.last_price) ? "#198754":"#DC3545"
+                            let color = setColor(prices, el.last_price)
+                            // let color = !prices.length ? "black" : prices.some((elem) => elem > el.last_price) ? "#198754":"#DC3545"
                             return(
                                 <Row 
                                     className="align-items-center mx-1 mt-0 mb-0 d-flex"  

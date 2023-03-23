@@ -54,7 +54,7 @@ const OurItemEdit = (props) => {
             height={550}
             ref={(ref) => { gridRef = ref}}
             onRowUpdated={(e) =>  ApiService.updateOurItem(e.data).then(() => props.refresh())}
-            onRowRemoved={(e) => console.log(e)}
+            onRowRemoved={(e) => ApiService.deleteOurItem(e.key.$oid).then((res) =>{window.alert(res);props.refresh()})}
             onRowInserted={(e) => ApiService.addOurItem(e.data).then(() => props.refresh())}
         >
          <Editing

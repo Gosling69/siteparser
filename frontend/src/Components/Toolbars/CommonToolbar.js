@@ -72,6 +72,7 @@ const CommonToolbar = (props) => {
         <>
         <UploadModal
             show={showModal}
+            uploadData={uploadData}
             setShow={setShowModal}
             data={uploadData}
             clearData={clearData}
