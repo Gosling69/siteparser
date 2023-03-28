@@ -8,18 +8,9 @@ from bson.objectid import ObjectId
 from datetime import datetime
 import parse_funcs
 import json
-
-MONGO_HOST = "mongo"
-MONGO_PORT = 27017
-
-#decorator to connect and disconnect from database
-def database_connector(func):
-    def wrapper_database_connector(*args, **kwargs):
-        connect('test', host=MONGO_HOST, port=MONGO_PORT)
-        result = func(*args, **kwargs)
-        disconnect('test')
-        return result
-    return wrapper_database_connector
+from db_decorator import database_connector
+from errors import ErrorHandler
+from work_with_telegram import send_message_to_group
 
 @database_connector
 def init_standart_sites():
@@ -143,6 +134,7 @@ def update_site(entry: dict ) -> dict:
         target_site.update(**update_dict)
     return {}
 
+@ErrorHandler
 @database_connector
 def add_item(entry: Union[Item, OurItem]) -> dict:
     item_exists = entry.__class__.objects(item_link=entry.item_link).count() != 0
@@ -170,22 +162,39 @@ def add_item(entry: Union[Item, OurItem]) -> dict:
         if quantity != -1 and price != -1:
             add_data_to_item(entry.pk.__str__(), ParseData(quantity=quantity, price=price))
     else:
-        update_dict = parse_funcs.parse_our_site(entry, [entry_site])
+        update_dict = parse_funcs.parse_ours(entry, [entry_site])
         update_our_item(update_dict)
     return {}
 
+# @database_connector
+# def add_data_to_report(item:Item, parse_data: ParseData) -> dict:
+#     report_item = ReportItem(
+#         price_before = item.last_price,
+#         price_now = parse_data.price,
+#         # site_name = item.site.name,
+#         link = item.item_link,
+#         name =item.name,
+#     )
+#     target_report = Report.objects(date=parse_data.date_time).get()
+#     if target_report is None:
+#         new_report = Report(
+#             items=[report_item]
+#         )
+#         new_report.save()
+#     else:
+#         target_report.update_one(push__items = report_item)
+#     # target_report.save()
+#     return {}
 
-@database_connector
-def link_items(enemy_item_id: str, our_item_id: str) -> dict:
-    enemy_item = Item.objects(pk=enemy_item_id).get()
-    if enemy_item == None:
-        print("ENEMY ITEM NOT FOUND")
-        return {}
-    OurItem.objects(pk=our_item_id).update_one(push__linked_items=enemy_item)
-    return {}
-
+# add_data_to_report()
+@ErrorHandler
 @database_connector
 def add_data_to_item(item_id:str, parse_data: ParseData) -> dict:
+    target_item = Item.objects(pk=item_id)
+    if target_item[0].data[-1].price != parse_data.price:
+        msg = f"Price change for:{target_item[0].item_link}\nbefore: {target_item[0].data[-1].price}\nafter: {parse_data.price} "
+        send_message_to_group(msg)
+        # add_data_to_report(target_item, parse_data)
     Item.objects(pk=item_id).update_one(
         push__data=parse_data, 
         set__last_price=parse_data.price, 
@@ -221,7 +230,7 @@ def update_our_item(entry: dict ) -> dict:
                     update_dict[f"set__{key}"] = list(map(lambda el : ObjectId(el), entry[key])) 
                 else:
                     update_dict[f"set__{key}"] = entry[key]
-        print(update_dict)
+        # print(update_dict)
         target_item.update(**update_dict)
     return {}
 
@@ -592,3 +601,16 @@ def delete_our_item(our_item_id: str):
     
     to_delete.delete()
     return f"deleted our item with id {our_item_id}"
+    
+@database_connector
+def add_error(error) -> dict:
+    db_error = Error(
+        description = error.ErrorArguments["description"],
+        arguments = error.ErrorArguments["arguments"],
+        level = error.__class__,
+    )
+    print(error.__class__)
+    print(error.ErrorArguments["arguments"])
+    print(error.ErrorArguments["description"])
+    print(db_error)
+    pass

@@ -10,7 +10,7 @@ import DataGrid, {
     Button,
 
   } from 'devextreme-react/data-grid';
-  import 'devextreme-react/text-area';
+// import 'devextreme-react/text-area';
 import ApiService from "../../Api/api";
 import {Row, Col, } from "react-bootstrap"
 import CommonToolbar from "../Toolbars/CommonToolbar";

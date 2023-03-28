@@ -1,6 +1,8 @@
 from mongoengine import *
 from enum import Enum
 import datetime
+
+
 class ErrorLevel(Enum):
     MINOR = 'minor'
     AVERAGE = 'average'
@@ -10,12 +12,13 @@ class DriverType(Enum):
     SELENIUM = 'selenium'
     REGULAR = 'regular'
 
+
+
 class Error(Document):
     description = StringField()
-    arguments = ListField()
+    item_link = StringField()
     level = EnumField(ErrorLevel, default=ErrorLevel.MINOR)
     date_time = DateTimeField(default=datetime.datetime.utcnow)
-
 
 class ParseData(EmbeddedDocument):
     price = IntField()
@@ -52,4 +55,14 @@ class OurItem(Document):
     linked_items = ListField(ReferenceField(Item))
     data = EmbeddedDocumentListField(ParseData)
 
+# class ReportItem(EmbeddedDocument):
+#     price_before = IntField()
+#     price_now = IntField()
+#     site_name = StringField()
+#     link = URLField()
+#     name = StringField()
 
+# class Report(Document):
+#     date = DateField(default=datetime.datetime.utcnow)
+#     items = ListField(ReportItem)
+#     pass

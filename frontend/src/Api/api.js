@@ -102,11 +102,21 @@ export default class ApiService {
         return response.data
     }
 
+    // ERRORS
+    static async getErrors(){
+        let response = await axios.get(ApiService.endpoint + "/get_errors")
+        return response.data
+    }
+
     //MISC
     static async runUpdate(){
         let response = await axios.post(ApiService.endpoint + "/run_update")
-        window.alert(response.data)
+        // window.alert(response.data)
         return response
+    }
+    static async getHohol(){
+        let response = await axios.get(ApiService.endpoint + "/get_hohol")
+        return response.data === "True" 
     }
    
    
