@@ -1,4 +1,11 @@
 
+from db_decorator import database_connector
+from models import Error, ErrorLevel
+from typing import Union
+from json import loads
+from bson.json_util import dumps
+from work_with_telegram import send_message
+
 QUANTITY_ERROR = "Quantity Not Found"
 PRICE_ERROR = "Price Not Found"
 PAGE_NOT_FOUND_ERROR = "Page not found"
@@ -7,42 +14,78 @@ PATH_FOR_PRICE_QUANTITY = "No path for price or quantity"
 def ErrorHandler(func):
     def InnerFunc(*args, **kwargs):
         try:
-            func(*args, **kwargs)
+            result = func(*args, **kwargs)
+            return result
         except MinorError as e:
-            send_to_db()
-            print(e)
+            add_error(e)
+            print(e.__dict__)
         except AverageError as e:
-            send_to_db()
+            add_error(e)
             condition = True
             if condition:
-                send_to_telegram()
-            print(e)
+                pass
+                # send_message(e.__dict__.__repr__())
+            print(e.__dict__)
         except SevereError as e:
-            send_to_db()
-            send_to_telegram()
-            print(e)
+            add_error(e)
+            send_message(e.__dict__.__repr__())
+            print(e.__dict__)
         except Exception as e:
             print(e)
-            send_to_telegram()
+            send_message(str(e))
     return InnerFunc
 
 class MinorError(Exception):
-    def __init__(self, *args: object) -> None:
+    def __init__(self, *args, **kwargs: object) -> None:
         super().__init__(*args)
-        self.ErrorArguments = args
+        self.description = kwargs.get('description', None)
+        self.item_link = kwargs.get('item_link', None)
+        self.level = ErrorLevel.MINOR
+
 class AverageError(Exception):
-    def __init__(self, *args: object) -> None:
+    def __init__(self, *args, **kwargs: object) -> None:
         super().__init__(*args)
-        self.ErrorArguments = args
+        self.description = kwargs.get('description', None)
+        self.item_link = kwargs.get('item_link', None)
+        self.level = ErrorLevel.AVERAGE
+
 class SevereError(Exception):
-    def __init__(self, *args: object) -> None:
+    def __init__(self, *args, **kwargs: object) -> None:
         super().__init__(*args)
-        self.ErrorArguments = args
+        self.description = kwargs.get('description', None)
+        self.item_link = kwargs.get('item_link', None)
+        self.level = ErrorLevel.SEVERE
+    
 
+@database_connector
+def find_occured_error():
+    pass
 
-def send_to_telegram():
-    # Make separate module telegram.py
-    pass
-def send_to_db():
-    # Add function to mongo.py
-    pass
+@database_connector
+def add_error(error: Union[MinorError, AverageError, SevereError ] ) -> dict:
+    db_error = Error(
+        description = error.description,
+        item_link = error.item_link,
+        level = error.level
+    )
+    db_error.save()
+
+@database_connector
+def get_errors() -> dict:
+    pipeline = [
+        {"$group" : 
+            {
+                "_id":{"level":"$level", "description":"$description","item_link":"$item_link",}, 
+                
+                "count":{"$sum":1}, 
+                "date_times":{"$push":"$date_time"}
+            }
+        },
+        {"$sort":{"date_times.date":-1}}
+
+    ]
+    result = loads(dumps(Error.objects().aggregate(pipeline)))
+
+    # print(result)
+    return result
+

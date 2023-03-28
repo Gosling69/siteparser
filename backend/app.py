@@ -2,39 +2,32 @@ from flask import Flask, request
 from flask_apscheduler import APScheduler
 from apscheduler.events import EVENT_JOB_EXECUTED, EVENT_JOB_MISSED, EVENT_JOB_ERROR
 from flask_cors import CORS
-# from flask_socketio import SocketIO
+from flask_socketio import SocketIO, send, emit
 from models import *
 import site_parser
 import mongo
 import json
-from errors import ErrorHandler
-
+import errors
+from event_provider import *
+# from work_with_telegram import hohol
 
 
 app = Flask(__name__)
 CORS(app)
-
-# socketio=SocketIO(app)
-class BoolWrap(object):
-    def __init__(self) -> None:
-        self.status = False
-        pass
-    def set_status(self, arg):
-        self.status = arg
-
-is_job_running = BoolWrap()
-
+socketio = SocketIO(app, cors_allowed_origins="*")
 scheduler = APScheduler()
+is_job_running = EventProvider()
+is_job_running.attach(socketio)
+# hohol.attach(socketio)
 
 def scheduleDecorator(func):
     def InnerFunc(*args, **kwargs):
         is_job_running.set_status(True)
-        print("PARSING SITES")
+        is_job_running.notify_updating(is_job_running.status)
         func(*args, **kwargs)
-        print("DONE")
         is_job_running.set_status(False)
+        is_job_running.notify_updating(is_job_running.status)
     return InnerFunc
-
 
 def listener(event):
     is_job_running.set_status(False)
@@ -45,16 +38,15 @@ def scheduleTask():
     site_parser.parse_sites()
     site_parser.update_our_items()
 
-
-
 scheduler.add_listener(listener, EVENT_JOB_EXECUTED | EVENT_JOB_MISSED | EVENT_JOB_ERROR)
 scheduler.add_job(id = 'Scheduled Task', func=scheduleTask, trigger="interval", hours=1, max_instances=1)
 scheduler.start()
 
-# @socketio.on('connect')
-# def ws_connect():
-#     pass
-
+@socketio.on('connect')
+def ws_connect():
+    print("CONNECTED")
+    # emit("hohol", hohol.status)
+    emit("isupdating", is_job_running.status)
 
 @app.route('/run_update', methods=['POST'])
 def run_update():
@@ -69,7 +61,6 @@ def get_items():
     init_date = request.args.get('init_date')
     end_date = request.args.get('end_date')
     items = mongo.get_items(init_date, end_date)
-    
     return items
 
 @app.route('/get_one_item', methods=['GET'])
@@ -78,23 +69,19 @@ def get_one_item():
     init_date = request.args.get('init_date')
     end_date = request.args.get('end_date')
     item = mongo.get_one_item(item_id, init_date, end_date)
-    
     return item
 
 @app.route('/delete_item/<id>', methods=['DELETE'])
 def delete_item(id):
     return mongo.delete_item(id)
 
-
 @app.route('/delete_site/<id>', methods=['DELETE'])
 def delete_site(id):
     return mongo.delete_site(id)
 
-
 @app.route('/delete_our_item/<id>', methods=['DELETE'])
 def delete_our_item(id):
     return mongo.delete_our_item(id)
-
 
 @app.route('/get_sites', methods=['GET'])
 def get_sites():
@@ -183,7 +170,14 @@ def init_standart_sites():
     mongo.init_standart_sites()
     return 'Hello, World!'
 
+@app.route('/get_errors', methods=['GET'])
+def get_errors():
+    # mongo.init_standart_sites()
+    errs = errors.get_errors()
+    return errs
+
 
 
 # if __name__ == '__main__':
-app.run(host="0.0.0.0", port=5000)
+socketio.run(app, host="0.0.0.0", port=5000, allow_unsafe_werkzeug=True )
+# app.run(host="0.0.0.0", port=5000)

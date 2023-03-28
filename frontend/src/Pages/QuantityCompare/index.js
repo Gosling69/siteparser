@@ -67,21 +67,10 @@ const QuantityCompare = (props) => {
 
     }
 
-
     useEffect(() => {
         refresh()
-        // setItems(data)
-    },[])
-    useEffect(() => {
-        refresh()
-
-        // console.log("INIT")
-    },[initDate])
-    useEffect(() => {
-        refresh()
-
-        // console.log("END")
-    },[endDate])
+    },[initDate, endDate])
+    
     return(
         <>
         <NavBar/>

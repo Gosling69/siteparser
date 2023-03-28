@@ -1,7 +1,8 @@
 
-import { useState } from "react"
+import { useContext, useState } from "react"
 import {Card, Row, Col,OverlayTrigger, Tooltip} from "react-bootstrap"
 import UilExternalLinkAlt from '@iconscout/react-unicons/icons/uil-external-link-alt'
+import { ThemeContext } from "../ThemeContext"
 
 
 const StoreCard = (props) => {
@@ -11,7 +12,7 @@ const StoreCard = (props) => {
         if (props.ourPrice > item.last_price) return "danger"
         if (props.ourPrice === item.last_price) return "secondary"
     }
-
+    // const isHohol = useContext(ThemeContext)
    
 
     const [item, setItem] = useState(props.item)
@@ -41,6 +42,7 @@ const StoreCard = (props) => {
                     style={{"color": variant === "success" ? "green" : "red"}}
                 >
                     {item.site?.name}
+                    {/* {String(isHohol)} */}
                 </div>
             </Card.Header>
             <Card.Body>
