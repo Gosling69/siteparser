@@ -158,9 +158,8 @@ def add_item(entry: Union[Item, OurItem]) -> dict:
             parsefunc = parse_funcs.parse_regular
         else:
             parsefunc = parse_funcs.parse_selenium
-        quantity, price = parsefunc(entry, entry_site)
-        if quantity != -1 and price != -1:
-            add_data_to_item(entry.pk.__str__(), ParseData(quantity=quantity, price=price))
+        parse_data = parsefunc(entry, entry_site)
+        add_data_to_item(entry.pk.__str__(), parse_data)
     else:
         update_dict = parse_funcs.parse_ours(entry, [entry_site])
         update_our_item(update_dict)
@@ -191,7 +190,7 @@ def add_item(entry: Union[Item, OurItem]) -> dict:
 @database_connector
 def add_data_to_item(item_id:str, parse_data: ParseData) -> dict:
     target_item = Item.objects(pk=item_id)
-    if target_item[0].data[-1].price != parse_data.price:
+    if len(target_item[0].data) and target_item[0].data.pop().price != parse_data.price:
         msg = f"Price change for:{target_item[0].item_link}\nbefore: {target_item[0].data[-1].price}\nafter: {parse_data.price} "
         send_message_to_group(msg)
         # add_data_to_report(target_item, parse_data)
