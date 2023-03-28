@@ -5,6 +5,7 @@ from typing import Union
 from json import loads
 from bson.json_util import dumps
 from work_with_telegram import send_message
+import traceback
 
 QUANTITY_ERROR = "Quantity Not Found"
 PRICE_ERROR = "Price Not Found"
@@ -31,8 +32,8 @@ def ErrorHandler(func):
             send_message(e.__dict__.__repr__())
             print(e.__dict__)
         except Exception as e:
-            print(e)
-            send_message(str(e))
+            print(traceback.format_exc())
+            send_message(traceback.format_exc())
     return InnerFunc
 
 class MinorError(Exception):

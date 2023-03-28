@@ -9,24 +9,24 @@ GROUP_ID = ***REMOVED***
 bot = telebot.TeleBot(API_KEY, threaded=False)
 # hohol = EventProvider()
 
-# @bot.message_handler(commands=['hoholon'])
-# def start(message):
-#     if message.from_user.id == USER_ID:
-#         hohol.set_status(True)
-#         hohol.notify_hohol(hohol.status)
-#         bot.send_message(message.chat.id, 'hohol on')
-#     else:
-#         bot.send_message(message.chat.id, 'Access denied')
+@bot.message_handler(commands=['hoholon'])
+def start(message):
+    if message.from_user.id == USER_ID:
+        hohol.set_status(True)
+        hohol.notify_hohol(hohol.status)
+        bot.send_message(message.chat.id, 'hohol on')
+    else:
+        bot.send_message(message.chat.id, 'Access denied')
 
 
-# @bot.message_handler(commands=['hoholoff'])
-# def start(message):
-#     if message.from_user.id == USER_ID:
-#         hohol.set_status(False)
-#         hohol.notify_hohol(hohol.status)
-#         bot.send_message(message.chat.id, 'hohol off')
-#     else:
-#         bot.send_message(message.chat.id, 'Access denied')
+@bot.message_handler(commands=['hoholoff'])
+def start(message):
+    if message.from_user.id == USER_ID:
+        hohol.set_status(False)
+        hohol.notify_hohol(hohol.status)
+        bot.send_message(message.chat.id, 'hohol off')
+    else:
+        bot.send_message(message.chat.id, 'Access denied')
 
 def send_message_to_group(msg):
     bot.send_message(chat_id=GROUP_ID, text=msg)
