@@ -330,9 +330,34 @@ def get_items(init_date: str = None, end_date: str = None) -> list:
             }
         }
         ]
+
+        items = Item.objects().aggregate(pipeline)
+
+        new_items = []
+
+        for item in items:
+            prev_price = -1
+            prev_quantity = -1
+            
+            new_data = []
+
+            for data in item["data"]:
+                if (data["quantity"] == prev_quantity) and (data["price"] == prev_price):
+                    continue
+                else:
+                    new_data.append(data)
+                
+                prev_price = data["price"]
+                prev_quantity = data["quantity"]
+
+            item["data"] = new_data
+
+            new_items.append(item)
     
-        result = loads(dumps(Item.objects().aggregate(pipeline)))
-    except ValueError:
+        result = loads(dumps(new_items))
+
+    except ValueError as e:
+        print(f"ERROR is {e}")
         return "ERROR: Wrong type of arguments \"init_date\" or \"end_date\""
     return result
 
