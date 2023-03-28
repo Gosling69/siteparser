@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import ApiService from "../../Api/api"
-import {Row, Col, Nav, Tab, Form} from "react-bootstrap"
+import {Row, Col, OverlayTrigger, Tooltip, Tab, Form} from "react-bootstrap"
 import {Button} from "devextreme-react"
 import StoreCard from "../../Components/StoreCard"
 import NavBar from "../../Components/Toolbars/NavBar"
@@ -18,12 +18,13 @@ import UilExternalLinkAlt from '@iconscout/react-unicons/icons/uil-external-link
 
     const setColor = (priceList, ourLastPrice) => {
         if (!priceList.length) return noneColor
-        if (priceList.some((elem) => elem > ourLastPrice)) {
-            return successColor
-        }
         if(priceList.some((elem) => elem < ourLastPrice)) {
             return dangerColor
         }
+        if (priceList.some((elem) => elem > ourLastPrice)) {
+            return successColor
+        }
+        
         return "black"
     }
 
@@ -66,7 +67,7 @@ import UilExternalLinkAlt from '@iconscout/react-unicons/icons/uil-external-link
                             // let color = !prices.length ? "black" : prices.some((elem) => elem > el.last_price) ? "#198754":"#DC3545"
                             return(
                                 <Row 
-                                    className="align-items-center mx-1 mt-0 mb-0 d-flex"  
+                                    className="align-items-center mx-1 mt-0 mb-0 pb-1 pt-1 d-flex"  
                                     style={{
                                         "color":color,
                                         "backgroundColor":activeItem === index? "#FBEA58":"white",
@@ -75,9 +76,20 @@ import UilExternalLinkAlt from '@iconscout/react-unicons/icons/uil-external-link
                                     }} 
                                     onClick={() => setActiveItem(index)} 
                                 >
-                                    <Col  className="pr-0" xs={6} >
+                                    {/* <OverlayTrigger key={index} overlay={<Tooltip placement="left" id={index}>{el.name}</Tooltip>}> */}
+                                    <Col 
+                                        style={{
+                                            "overflow": "hidden",
+                                            "whiteSpace": "nowrap",
+                                            "textOverflow": "ellipsis",
+
+                                        }} 
+                                        className="pr-0" 
+                                        xs={6} 
+                                    >
                                         {el.name}
                                     </Col>
+                                    {/* </OverlayTrigger> */}
                                     <Col className="d-flex justify-content-center" >
                                         {`${el.last_price} р`}
                                     </Col>
@@ -85,7 +97,7 @@ import UilExternalLinkAlt from '@iconscout/react-unicons/icons/uil-external-link
                                 
                                     <UilExternalLinkAlt
                                         className="clickIcon"
-                                        size="35" 
+                                        size="24" 
                                         color="#6F7888"
                                         onClick={() => window.open(el.item_link, "_blank")} 
 

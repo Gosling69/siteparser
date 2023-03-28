@@ -2,8 +2,13 @@ import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import { useLocation } from 'react-router-dom';
+import { useContext } from 'react';
+import { ThemeContext } from '../../ThemeContext';
 
 const NavBar = (props) => {
+    
+    const context = useContext(ThemeContext)
+    const hohol = context.isHohol
 
     const whereabouts = useLocation().pathname
     const style = () => {
@@ -16,6 +21,7 @@ const NavBar = (props) => {
         }
     }
 
+    
     const linkNamesMap = {
         "/admin":"Admin",
         "/price_compare":"Price",
@@ -38,6 +44,7 @@ const NavBar = (props) => {
                     }}
                 >
                     ШТАБЕЛЬ
+                    {/* {String(hohol)} */}
                 </div>
                 <Nav
                     style={{
@@ -56,10 +63,8 @@ const NavBar = (props) => {
                             {name}
                         </Nav.Link>
                     )}
-                    
                 </Nav>
         </Navbar>
     )
-
 }
 export default NavBar

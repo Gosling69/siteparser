@@ -1,5 +1,5 @@
 
-import { useRef, useState } from "react"
+import { useRef, useState, useContext } from "react"
 import {Row, Col, Button} from "react-bootstrap"
 import ApiService from "../../Api/api"
 import UilRefresh from '@iconscout/react-unicons/icons/uil-refresh'
@@ -8,12 +8,15 @@ import UilPlus from '@iconscout/react-unicons/icons/uil-plus'
 
 import readXlsxFile from 'read-excel-file'
 import UploadModal from "../Modals/UploadModal"
+import { ThemeContext } from "../../ThemeContext"
 
 const CommonToolbar = (props) => {
 
     const [showModal, setShowModal] = useState(false)
     const [uploadData,setUploadData] = useState([])
     const fileInputRef = useRef()
+    const context = useContext(ThemeContext)
+    const isUpdating = context.isUpdating
 
     const ButtonStyle = {
         backgroundColor:"white",
@@ -84,8 +87,9 @@ const CommonToolbar = (props) => {
                 <Button
                     style={ButtonStyle}
                     onClick={ApiService.runUpdate}
+                    disabled={isUpdating}
                 >
-                    Run Update
+                    {isUpdating? "Updating" :"Run Update"}
                     <UilRefresh
                         style={IconStyle}
                         // className="mx-4"

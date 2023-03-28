@@ -5,13 +5,16 @@ import ItemEdit from "../../Components/Tables/ItemEdit"
 import OurItemEdit from "../../Components/Tables/OurItemEdit"
 import SiteEdit from "../../Components/Tables/SiteEdit"
 import NavBar from "../../Components/Toolbars/NavBar"
+import ErrorsTable from "../../Components/Tables/ErrorsTable"
 
 const AdminPage = (props) => {
 
     const[items, setItems] = useState([])
     const[ourItems, setOurItems] = useState([])
     const [sites, setSites] = useState([])
+    const [errors, setErrors] = useState([])
     const [activeTab, setActiveTab] = useState("Items")
+    
 
     const refreshItems = () => {
         ApiService.getItems()
@@ -36,10 +39,18 @@ const AdminPage = (props) => {
             setSites(res)
         })
     }
+    const refreshErrors = () => {
+        ApiService.getErrors()
+        .then((res) => {
+            console.log(res)
+            setErrors(res)
+        })
+    }
     useEffect(() =>{
         refreshItems()
         refreshOurItems()
         refreshSites()
+        refreshErrors()
     },[])
     const ButtonStyle= (item) =>{
         return{
@@ -77,10 +88,16 @@ const AdminPage = (props) => {
                             sites={sites}
                         />
                     </Tab.Pane >
+                    <Tab.Pane  className="mt-2" eventKey="Errors" title="Errors">
+                        <ErrorsTable
+                            errors={errors}
+                            refresh={refreshErrors}
+                        />
+                    </Tab.Pane >
                 </Tab.Content>      
                 </Col>
                 <Col style={{"paddingLeft":"50px", "paddingRight":"0"}} xs={1}>
-                    {["Items","Our Items","Sites"].map((el,index) =>
+                    {["Items","Our Items","Sites", "Errors"].map((el,index) =>
                         <Row className={index === 0 ? "mb-3 mt-5":" mb-3"}>
                         <Button
                             // variant='secondary'
