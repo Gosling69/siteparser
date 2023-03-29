@@ -234,6 +234,31 @@ def update_our_item(entry: dict ) -> dict:
     return {}
 
 
+def remove_duplicates_from_items(items: list) -> list:
+    new_items = []
+
+    for item in items:
+        prev_price = -1
+        prev_quantity = -1
+        
+        new_data = []
+
+        for data in item["data"]:
+            if (data["quantity"] == prev_quantity) and (data["price"] == prev_price):
+                continue
+            else:
+                new_data.append(data)
+            
+            prev_price = data["price"]
+            prev_quantity = data["quantity"]
+
+        item["data"] = new_data
+
+        new_items.append(item)
+        
+    return new_items
+
+
 @database_connector
 def get_items(init_date: str = None, end_date: str = None) -> list:
 
@@ -333,28 +358,9 @@ def get_items(init_date: str = None, end_date: str = None) -> list:
 
         items = Item.objects().aggregate(pipeline)
 
-        new_items = []
-
-        for item in items:
-            prev_price = -1
-            prev_quantity = -1
-            
-            new_data = []
-
-            for data in item["data"]:
-                if (data["quantity"] == prev_quantity) and (data["price"] == prev_price):
-                    continue
-                else:
-                    new_data.append(data)
-                
-                prev_price = data["price"]
-                prev_quantity = data["quantity"]
-
-            item["data"] = new_data
-
-            new_items.append(item)
+        unique_items = remove_duplicates_from_items(items)
     
-        result = loads(dumps(new_items))
+        result = loads(dumps(unique_items))
 
     except ValueError as e:
         print(f"ERROR is {e}")
@@ -481,7 +487,12 @@ def get_one_item(item_id: str = None, init_date: str = None, end_date: str = Non
                     }
         }
         ]
-        result = loads(dumps(Item.objects().aggregate(pipeline)))
+
+        items = Item.objects().aggregate(pipeline)
+
+        unique_items = remove_duplicates_from_items(items)
+
+        result = loads(dumps(unique_items))
     except ValueError:
         return "ERROR: Wrong type of arguments \"init_date\" or \"end_date\""
     return result
