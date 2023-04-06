@@ -1,10 +1,17 @@
 import telebot
 from event_provider import *
 import threading
+import os
+from dotenv import load_dotenv
 
-API_KEY = '6035974003:AAE-fFZ7UKWRIeqmz85KOLhHJ6pSM04L5iw'
-USER_ID = 445884242
-GROUP_ID = -616619489
+dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+if os.path.exists(dotenv_path):
+    load_dotenv(dotenv_path)
+
+
+API_KEY = os.environ.get('API_KEY')
+USER_ID = int(os.environ.get('USER_ID'))
+GROUP_ID = int(os.environ.get('GROUP_ID'))
 
 bot = telebot.TeleBot(API_KEY, threaded=False)
 # hohol = EventProvider()
