@@ -3,7 +3,8 @@ mongodb/*
 
 # exception to the rule
 !mongodb/.gitkeep 
-
+*.txt*
 /node_modules
 *.xlsx
 __pycache__
+.env
