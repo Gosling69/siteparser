@@ -1,7 +1,3 @@
-
-import urllib3
-urllib3.disable_warnings()
-
 import mongo
 import parse_funcs
 from models import *
