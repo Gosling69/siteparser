@@ -207,7 +207,7 @@ def update_item(entry: dict ) -> dict:
     if target_item.count() > 0:
         update_dict = {}
         for key in entry:
-            if key in ["name","item_link","site"]:
+            if key in ["name", "item_link", "site", "last_price"]:
                 if type(entry[key]) is dict:
                     update_dict[f"set__{key}"] = ObjectId(entry[key]["_id"]["$oid"]) 
                 else:
@@ -222,7 +222,7 @@ def update_our_item(entry: dict ) -> dict:
     if target_item.count() > 0:
         update_dict = {}
         for key in entry:
-            if key in ["name","item_link", "linked_items","last_price"]:
+            if key in ["name","item_link", "linked_items", "last_price"]:
                 if type(entry[key]) is dict:
                     update_dict[f"set__{key}"] = ObjectId(entry[key]["_id"]["$oid"]) 
                 elif type(entry[key]) is list:

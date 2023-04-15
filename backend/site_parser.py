@@ -1,4 +1,7 @@
 
+import urllib3
+urllib3.disable_warnings()
+
 import mongo
 import parse_funcs
 from models import *
@@ -55,9 +58,11 @@ def update_our_items():
         indexes.append([10*i, 10*(i+1)])
         pass
     # price_kwargs = our_site[0].path_to_price
+
     for [init,end] in indexes:
         for item in our_items[init:end]:
-            parse_our_site(item, our_site)
+            if item["disable_parsing"] == False:
+                parse_our_site(item, our_site)
             # update_dict = parse_funcs.parse_ours(item, our_site)
             # mongo.update_our_item(update_dict)
         time.sleep(60)

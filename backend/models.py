@@ -54,6 +54,7 @@ class OurItem(Document):
     last_quantity = IntField()
     linked_items = ListField(ReferenceField(Item))
     data = EmbeddedDocumentListField(ParseData)
+    disable_parsing = BooleanField(default=False)
 
 # class ReportItem(EmbeddedDocument):
 #     price_before = IntField()
