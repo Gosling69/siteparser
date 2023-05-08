@@ -4,6 +4,7 @@ import * as _ from 'lodash';
 export default class ApiService {
 
     static endpoint = "http://localhost:5000"
+    // static endpoint = "http://90.189.205.102:5000"
     // static endpoint = "http://192.168.88.3:5000"
 
 
