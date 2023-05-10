@@ -2,7 +2,6 @@ from mongoengine import *
 from enum import Enum
 import datetime
 
-
 class ErrorLevel(Enum):
     MINOR = 'minor'
     AVERAGE = 'average'
@@ -11,8 +10,6 @@ class ErrorLevel(Enum):
 class DriverType(Enum):
     SELENIUM = 'selenium'
     REGULAR = 'regular'
-
-
 
 class Error(Document):
     description = StringField()
@@ -38,6 +35,11 @@ class Site(Document):
     driver_type = EnumField(DriverType, default=DriverType.REGULAR)
     actions = EmbeddedDocumentListField(PipeElement)
 
+class Category(Document):
+    name = StringField()
+    properties = ListField()
+    values = DictField()
+
 class Item(Document):
     name = StringField()
     item_link = URLField()
@@ -45,6 +47,8 @@ class Item(Document):
     last_price = IntField()
     last_quantity = IntField()
     data = EmbeddedDocumentListField(ParseData)
+    category = DictField()
+    # category_props = DictField()
 
 class OurItem(Document):
     name = StringField()
@@ -54,7 +58,11 @@ class OurItem(Document):
     last_quantity = IntField()
     linked_items = ListField(ReferenceField(Item))
     data = EmbeddedDocumentListField(ParseData)
-    disable_parsing = BooleanField(default=False)
+    disable_parsing = BooleanField(default=True)
+    category = DictField()
+    # category_props = DictField()
+    
+
 
 # class ReportItem(EmbeddedDocument):
 #     price_before = IntField()

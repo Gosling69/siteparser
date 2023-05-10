@@ -8,7 +8,7 @@ import UilPlus from '@iconscout/react-unicons/icons/uil-plus'
 
 import readXlsxFile from 'read-excel-file'
 import UploadModal from "../Modals/UploadModal"
-import { ThemeContext } from "../../ThemeContext"
+import { ThemeContext } from "../../Providers/ThemeContext"
 
 const CommonToolbar = (props) => {
 

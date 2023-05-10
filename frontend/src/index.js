@@ -6,18 +6,22 @@ import { BrowserRouter } from 'react-router-dom';
 import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'devextreme/dist/css/dx.light.css';
-import ThemeProvider from './ThemeContext';
-
-
+import ThemeProvider from './Providers/ThemeContext';
+import { FilterProvider } from './Providers/FilterProvider';
+import { CategoryOptionsProvider } from './Providers/CategoryOptionsProvider';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <BrowserRouter>
-    <ThemeProvider>
-      <React.StrictMode>
-        <App />
-      </React.StrictMode>
-    </ThemeProvider>
+    <CategoryOptionsProvider>
+      <FilterProvider>
+        <ThemeProvider>
+          <React.StrictMode>
+            <App />
+          </React.StrictMode>
+        </ThemeProvider>
+      </FilterProvider>
+    </CategoryOptionsProvider>
   </BrowserRouter>
 );
 

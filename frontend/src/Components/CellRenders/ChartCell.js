@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
-import DetailComponent from '../DetailComponent';
+import DetailComponent from "../Charts/DetailComponent"
 import {Button} from "devextreme-react"
 import UilChartLine from '@iconscout/react-unicons/icons/uil-chart-line'
 

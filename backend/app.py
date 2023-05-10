@@ -9,7 +9,6 @@ import mongo
 import json
 import errors
 from event_provider import *
-# from work_with_telegram import hohol
 
 
 app = Flask(__name__)
@@ -36,10 +35,10 @@ def listener(event):
 @scheduleDecorator
 def scheduleTask():
     site_parser.parse_sites()
-    site_parser.update_our_items()
+    # site_parser.update_our_items()
 
 scheduler.add_listener(listener, EVENT_JOB_EXECUTED | EVENT_JOB_MISSED | EVENT_JOB_ERROR)
-scheduler.add_job(id = 'Scheduled Task', func=scheduleTask, trigger="interval", hours=1, max_instances=1)
+scheduler.add_job(id = 'Scheduled Task', func=scheduleTask, trigger="interval", hours=3, max_instances=1)
 scheduler.start()
 
 @socketio.on('connect')
@@ -143,6 +142,7 @@ def update_our_item():
 @app.route('/update_item', methods=['PUT'])
 def update_item():
     raw_item = request.json["item"]
+    # print(raw_item)
     # entry = Item(**raw_item)
     mongo.update_item(raw_item)
     return 'Hello, World!'
@@ -175,6 +175,34 @@ def get_errors():
     # mongo.init_standart_sites()
     errs = errors.get_errors()
     return errs
+    
+
+@app.route('/get_categories', methods=['GET'])
+def get_categories():
+    # mongo.init_standart_sites()
+
+    categories = mongo.get_categories()
+    return categories.to_json()
+
+@app.route('/update_category', methods=['PUT'])
+def update_category():
+    raw_category = request.json["category"]
+    print(raw_category)
+    # entry = Item(**raw_item)
+    mongo.update_category(raw_category)
+    return 'Hello, World!'
+
+@app.route('/add_category', methods=['POST'])
+def add_category():
+    raw_category = request.json["category"]
+    new_category = Category.from_json(json_data=json.dumps(raw_category))
+    return mongo.add_category(new_category)   
+    
+
+
+@app.route('/delete_category/<id>', methods=['DELETE'])
+def delete_category(id):
+    return mongo.delete_category(id)
 
 
 

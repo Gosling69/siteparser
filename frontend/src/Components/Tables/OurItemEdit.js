@@ -9,11 +9,14 @@ import DataGrid, {
     Lookup,
   } from 'devextreme-react/data-grid';
 import 'devextreme-react/text-area';
-import LinkedItemsTagbox from "../LinkedItemsTagbox";
+import LinkedItemsTagbox from "../EditRenders/LinkedItemsTagbox";
 import ApiService from "../../Api/api";
 import CommonToolbar from "../Toolbars/CommonToolbar";
 import LinkCell from "../CellRenders/LinkCell";
-import EditDeleteIcons from "../EditDeleteIcons";
+import EditDeleteIcons from "../Icons/EditDeleteIcons";
+import CategoriesSelect from "../EditRenders/CategoriesSelect";
+import CategoryCell from "../CellRenders/CategoryCell";
+import CategoryValuesCell from "../CellRenders/CategoryValuesCell";
 
 const OurItemEdit = (props) => {
 
@@ -27,6 +30,8 @@ const OurItemEdit = (props) => {
     }
 
     const [ourItems,setOurItems] = useState(props.ourItems)
+    const [categories, setCategories] = useState(props.categories)
+
     // const [sites, setSites] = useState(props.sites)
     let gridRef = useRef(null);
 
@@ -34,6 +39,9 @@ const OurItemEdit = (props) => {
         setOurItems(props.ourItems)
     },[props.ourItems])
 
+    useEffect(() =>{
+        setCategories(props.categories)
+    },[props.categories])
 
     return(
         <>
@@ -57,23 +65,56 @@ const OurItemEdit = (props) => {
             onRowRemoved={(e) => ApiService.deleteOurItem(e.key.$oid).then((res) =>{window.alert(res);props.refresh()})}
             onRowInserted={(e) => ApiService.addOurItem(e.data).then(() => props.refresh())}
         >
-         <Editing
+        <Editing
             mode="popup"
             // allowUpdating={true}
             // useIcons={true}
         >
-        <Popup title="Our Item Info"  showTitle={true} width={800} height={400} />
+        <Popup title="Our Item Info"  showTitle={true} width={800} height={500} />
         <Form>
             <Item itemType="group" colCount={1} colSpan={2}>
                 <Item dataField="name" />
+                <Item dataField="last_price"/>
                 <Item dataField="item_link" />
                 <Item dataField="linked_items_ids" />
+                <Item dataField="category" />
             </Item>
          
         </Form>
         </Editing>
         <Column dataField="name" />
+        <Column 
+            width={100}
+            dataField="category" 
+            caption="Category"
+            allowEditing={true}
+            cellRender={data => <CategoryCell {...data}/>}
+            editCellComponent={data => 
+                <CategoriesSelect 
+                    categories={categories} 
+                    gridRef={gridRef} 
+                    {...data}
+                />
+            }            
+        >
+            <Lookup
+                dataSource={categories}
+                displayExpr="name"
+                valueExpr="_id.$oid"
+            />
+        </Column>
+        <Column 
+            dataField="category.values" 
+            caption="Category Props"
+            cellRender={data => <CategoryValuesCell {...data}/>}
+            allowEditing={true}
+            // editCellComponent={CategoryPropsEdit}
+        >
+        </Column>
         <Column dataField="item_link" сellRender={data => <LinkCell data={data}/>}/>
+        <Column dataField="last_price"/>
+        {/* <Column dataField="disable_parsing"/> */}
+
         <Column
             dataField="linked_items_ids"
             caption="Linked Items"

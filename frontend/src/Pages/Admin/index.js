@@ -6,6 +6,10 @@ import OurItemEdit from "../../Components/Tables/OurItemEdit"
 import SiteEdit from "../../Components/Tables/SiteEdit"
 import NavBar from "../../Components/Toolbars/NavBar"
 import ErrorsTable from "../../Components/Tables/ErrorsTable"
+import CategoriesTable from "../../Components/Tables/CategoriesEdit"
+import useFilteredData from "../../hooks/useFilteredData"
+import useFetch from "../../hooks/useFetch"
+import { useCategoryOptions } from "../../Providers/CategoryOptionsProvider"
 
 const AdminPage = (props) => {
 
@@ -13,8 +17,16 @@ const AdminPage = (props) => {
     const[ourItems, setOurItems] = useState([])
     const [sites, setSites] = useState([])
     const [errors, setErrors] = useState([])
+    const [categories, setCategories] = useState([])
     const [activeTab, setActiveTab] = useState("Items")
     
+    const {test, error, loading, refetch} = useFetch("http://localhost:5000/get_items", "GET", {}, true)
+    // const filters = useFilters()
+    
+
+    // useEffect(() => {
+    //     console.log("USPEH",filters)
+    // },[filters])
 
     const refreshItems = () => {
         ApiService.getItems()
@@ -46,12 +58,22 @@ const AdminPage = (props) => {
             setErrors(res)
         })
     }
+    const refreshCategories = () => {
+        ApiService.getCategories()
+        .then((res) => {
+            console.log(res)
+            setCategories(res)
+        })
+    }
     useEffect(() =>{
         refreshItems()
         refreshOurItems()
         refreshSites()
         refreshErrors()
+        refreshCategories()
+        refetch()
     },[])
+
     const ButtonStyle= (item) =>{
         return{
             "minHeight":90,
@@ -63,7 +85,7 @@ const AdminPage = (props) => {
     }
     return(
         <>
-        <NavBar/>
+        <NavBar categories={categories}/>
         <Tab.Container activeKey={activeTab}>
             <Row className="align-items-center" style={{"marginRight":"40px"}}>
                 <Col xs={11}>
@@ -71,15 +93,17 @@ const AdminPage = (props) => {
                     <Tab.Pane className="mt-2 " eventKey="Items" title="Items">
                         <ItemEdit
                             refresh={refreshItems}
-                            items={items}
+                            items={useFilteredData(items)}
                             sites={sites}
+                            categories={categories}
                         />
                     </Tab.Pane >
                     <Tab.Pane  className="mt-2" eventKey="Our Items" title="Our Items">
                         <OurItemEdit
                             refresh={refreshOurItems}
                             items={items}
-                            ourItems={ourItems}
+                            ourItems={useFilteredData(ourItems)}
+                            categories={categories}
                         />
                     </Tab.Pane >
                     <Tab.Pane  className="mt-2" eventKey="Sites" title="Sites">
@@ -94,10 +118,16 @@ const AdminPage = (props) => {
                             refresh={refreshErrors}
                         />
                     </Tab.Pane >
+                    <Tab.Pane  className="mt-2" eventKey="Categories" title="Categories">
+                        <CategoriesTable
+                            categories={categories}
+                            refresh={refreshCategories}
+                        />
+                    </Tab.Pane >
                 </Tab.Content>      
                 </Col>
                 <Col style={{"paddingLeft":"50px", "paddingRight":"0"}} xs={1}>
-                    {["Items","Our Items","Sites", "Errors"].map((el,index) =>
+                    {["Items","Our Items","Sites", "Errors", "Categories"].map((el,index) =>
                         <Row className={index === 0 ? "mb-3 mt-5":" mb-3"}>
                         <Button
                             // variant='secondary'

@@ -2,7 +2,6 @@
 import { useContext, useState } from "react"
 import {Card, Row, Col,OverlayTrigger, Tooltip} from "react-bootstrap"
 import UilExternalLinkAlt from '@iconscout/react-unicons/icons/uil-external-link-alt'
-import { ThemeContext } from "../ThemeContext"
 
 
 const StoreCard = (props) => {

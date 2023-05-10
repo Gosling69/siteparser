@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react"
 import ApiService from "../../Api/api"
-import {Row, Col, OverlayTrigger, Tooltip, Tab, Form} from "react-bootstrap"
+import {Row, Col, OverlayTrigger, Tooltip, Tab, Form, Container} from "react-bootstrap"
 import {Button} from "devextreme-react"
-import StoreCard from "../../Components/StoreCard"
+import StoreCard from "../../Components/Cards/StoreCard"
 import NavBar from "../../Components/Toolbars/NavBar"
 import UilExternalLinkAlt from '@iconscout/react-unicons/icons/uil-external-link-alt'
 
@@ -24,7 +24,6 @@ import UilExternalLinkAlt from '@iconscout/react-unicons/icons/uil-external-link
         if (priceList.some((elem) => elem > ourLastPrice)) {
             return successColor
         }
-        
         return "black"
     }
 
@@ -34,7 +33,7 @@ import UilExternalLinkAlt from '@iconscout/react-unicons/icons/uil-external-link
             console.log(res)
             setItems(res)
         })
-        // setItems(data)
+        // setItems(data)   
     },[])
 
     
@@ -60,7 +59,7 @@ import UilExternalLinkAlt from '@iconscout/react-unicons/icons/uil-external-link
                     
                     {items
                     .filter(el => el.name.toLowerCase().includes(nameFilter.toLowerCase()))
-                    .map((el, index) =>
+                    .map((el) =>
                         {
                             let prices = el.linked_items.map(el => el.last_price)
                             let color = setColor(prices, el.last_price)
@@ -70,26 +69,36 @@ import UilExternalLinkAlt from '@iconscout/react-unicons/icons/uil-external-link
                                     className="align-items-center mx-1 mt-0 mb-0 pb-1 pt-1 d-flex"  
                                     style={{
                                         "color":color,
-                                        "backgroundColor":activeItem === index? "#FBEA58":"white",
+                                        "backgroundColor":activeItem === el._id.$oid? "#FBEA58":"white",
                                         "cursor":"pointer",
                                         "borderRadius":"10px"
                                     }} 
-                                    onClick={() => setActiveItem(index)} 
+                                    onClick={() => setActiveItem(el._id.$oid)} 
                                 >
-                                    {/* <OverlayTrigger key={index} overlay={<Tooltip placement="left" id={index}>{el.name}</Tooltip>}> */}
                                     <Col 
-                                        style={{
-                                            "overflow": "hidden",
-                                            "whiteSpace": "nowrap",
-                                            "textOverflow": "ellipsis",
+                                        // style={{
+                                        //     "overflow": "hidden",
+                                        //     "whiteSpace": "nowrap",
+                                        //     "textOverflow": "ellipsis",
 
-                                        }} 
+                                        // }} 
                                         className="pr-0" 
                                         xs={6} 
                                     >
-                                        {el.name}
+                                        {/* {el.name} */}
+                                    <OverlayTrigger overlay={<Tooltip placement="top" id={el._id.$oid + " tooltip"}>{el.name}</Tooltip>}>
+                                        <p style={{
+                                            "overflow": "hidden",
+                                            "whiteSpace": "nowrap",
+                                            "textOverflow": "ellipsis",
+                                            margin:0,
+                                            padding:0
+
+                                        }} >{el.name}</p>
+
+                                    </OverlayTrigger>
+
                                     </Col>
-                                    {/* </OverlayTrigger> */}
                                     <Col className="d-flex justify-content-center" >
                                         {`${el.last_price} р`}
                                     </Col>
@@ -110,11 +119,11 @@ import UilExternalLinkAlt from '@iconscout/react-unicons/icons/uil-external-link
                 </Col>
                 <Col className="mx-4">
                 <Tab.Content>
-                    {items.map((el, index) =>
-                         <Tab.Pane eventKey={index}>
-                            <Row  xs={1} sm={2} md={2} lg={3}>
+                    {items.map((el) =>
+                         <Tab.Pane eventKey={el._id.$oid}>
+                            <Row className="mt-2" xs={1} lg={2} xl={3}>
                             {el.linked_items.map(item =>
-                                <Col >
+                                <Col className="mb-5" >
                                 <StoreCard
                                     item={item}
                                     ourPrice={el.last_price}

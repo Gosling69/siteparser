@@ -12,6 +12,7 @@ from db_decorator import database_connector
 from errors import ErrorHandler
 from work_with_telegram import send_message_to_group
 
+# SITE METHODS
 @database_connector
 def init_standart_sites():
     site_list = [
@@ -109,20 +110,15 @@ def init_standart_sites():
         else:
             print(new_site.url, "ALREADY THERE")
 
-
-
-
 @database_connector
 def get_sites(query:dict={}) -> list:
     result = Site.objects(**query)
     return result
 
-
 @database_connector
 def add_site(site: Site ) -> dict:
     site.save()
     return {}
-
 
 @database_connector
 def update_site(entry: dict ) -> dict:
@@ -133,6 +129,76 @@ def update_site(entry: dict ) -> dict:
             update_dict[f"set__{key}"] = entry[key]
         target_site.update(**update_dict)
     return {}
+
+@database_connector
+def delete_site(site_id: str):
+
+    #pipeline to copy selected site to dump collection
+    pipeline = [
+        {
+            u"$match": {
+                u"_id": ObjectId(f"{site_id}")
+            }
+        }, 
+        {
+            u"$merge": {
+                u"into": u"dump_site"
+            }
+        }
+    ]
+
+    Site.objects().aggregate(pipeline)
+    #saving selected site to check if we already deleted it
+    to_delete = Site.objects(id = ObjectId(f"{site_id}"))
+    if len(to_delete) == 0:
+        return f"ERROR: site with id {site_id} doesn't exist"
+    to_delete.delete()
+    return f"deleted site with id {site_id}"
+
+# CATEGORIES METHODS
+@database_connector
+def get_categories(query:dict={}) -> list:
+    result = Category.objects(**query)
+    return result
+
+@ErrorHandler
+@database_connector
+def add_category(entry:Category) -> dict:
+    item_exists = entry.__class__.objects(name=entry.name).count() != 0
+    if item_exists:
+        print("ALREADY EXISTS")
+        return {"error":"ALREADY EXISTS"}
+    entry.save()
+    return {"status":"OK"}
+
+@database_connector
+def update_category(entry: dict ) -> dict:
+    target_item = Category.objects(id=entry["_id"]["$oid"])
+    if target_item.count() > 0:
+        update_dict = {}
+        for key in entry:
+            if key in ["name", "properties", "site"]:
+                if type(entry[key]) is dict:
+                    update_dict[f"set__{key}"] = ObjectId(entry[key]["_id"]["$oid"]) 
+                else:
+                    update_dict[f"set__{key}"] = entry[key]
+        # print(update_dict)
+        target_item.update(**update_dict)
+    return {}
+
+@database_connector
+def delete_category(category_id: str):   
+    #saving selected item to check if we already deleted it
+    to_delete = Category.objects(id = ObjectId(f"{category_id}"))
+    
+    if len(to_delete) == 0:
+        return f"ERROR: item with id {category_id} doesn't exist"
+    
+    to_delete.delete()
+    return f"deleted item with id {category_id}"
+
+
+# ITEM METHODS
 
 @ErrorHandler
 @database_connector
@@ -207,28 +273,13 @@ def update_item(entry: dict ) -> dict:
     if target_item.count() > 0:
         update_dict = {}
         for key in entry:
-            if key in ["name", "item_link", "site", "last_price"]:
-                if type(entry[key]) is dict:
-                    update_dict[f"set__{key}"] = ObjectId(entry[key]["_id"]["$oid"]) 
-                else:
-                    update_dict[f"set__{key}"] = entry[key]
-        # print(update_dict)
-        target_item.update(**update_dict)
-    return {}
+            if key not in ["last_qunatity", "last_price", "_id", "site"]:
+                update_dict[f"set__{key}"] = entry[key]
 
-@database_connector
-def update_our_item(entry: dict ) -> dict:
-    target_item = OurItem.objects(id=entry["_id"]["$oid"])
-    if target_item.count() > 0:
-        update_dict = {}
-        for key in entry:
-            if key in ["name","item_link", "linked_items", "last_price"]:
-                if type(entry[key]) is dict:
-                    update_dict[f"set__{key}"] = ObjectId(entry[key]["_id"]["$oid"]) 
-                elif type(entry[key]) is list:
-                    update_dict[f"set__{key}"] = list(map(lambda el : ObjectId(el), entry[key])) 
-                else:
-                    update_dict[f"set__{key}"] = entry[key]
+                # if type(entry[key]) is dict and "_id" in entry[key]:
+                #     update_dict[f"set__{key}"] = ObjectId(entry[key]["_id"]["$oid"]) 
+                # else:
+                #     update_dict[f"set__{key}"] = entry[key]
         # print(update_dict)
         target_item.update(**update_dict)
     return {}
@@ -236,7 +287,6 @@ def update_our_item(entry: dict ) -> dict:
 
 def remove_duplicates_from_items(items: list) -> list:
     new_items = []
-
     for item in items:
         prev_price = -1
         prev_quantity = -1
@@ -261,20 +311,29 @@ def remove_duplicates_from_items(items: list) -> list:
 
 @database_connector
 def get_items(init_date: str = None, end_date: str = None) -> list:
-
     #if init_date and end_date empty
     if init_date is None or end_date is None:
         pipeline = [
             {
-                "$lookup":
-                    {
-                        "from": "site",
-                        "localField": "site",
-                        "foreignField": "_id",
-                        "as": "site"
-                    }
+            "$lookup":
+                {
+                    "from": "site",
+                    "localField": "site",
+                    "foreignField": "_id",
+                    "as": "site"
+                }
             },
-            { "$unwind": { "path": "$site" } },
+            { "$unwind": { "path": "$site","preserveNullAndEmptyArrays": True } },
+            # {
+            # "$lookup":
+            #     {
+            #         "from": "category",
+            #         "localField": "category",
+            #         "foreignField": "_id",
+            #         "as": "category"
+            #     }
+            # },
+            # { "$unwind": { "path": "$category","preserveNullAndEmptyArrays": True  } },
             {
                 "$project": 
                 {
@@ -283,6 +342,11 @@ def get_items(init_date: str = None, end_date: str = None) -> list:
                     "item_link": 1,
                     "last_price": 1,
                     "last_quantity":1,
+                    "category":1,
+                    # "category.values":1,
+                    # "category._id":1,                    
+                    # "category.name":1,
+                    # "category.properties":1,
                     "site.name": 1,
                     "site._id":1,
                     # "data":1,
@@ -313,10 +377,9 @@ def get_items(init_date: str = None, end_date: str = None) -> list:
                 "_id": 1,
                 "name": 1,
                 "item_link": 1,
-                # "last_price": 1,
-                # "last_quantity":1,
                 "site.name": 1,
                 "site._id":1,
+                "category":1,
                 "data":1,
             }
         },
@@ -357,8 +420,8 @@ def get_items(init_date: str = None, end_date: str = None) -> list:
         ]
 
         items = Item.objects().aggregate(pipeline)
-
-        unique_items = remove_duplicates_from_items(items)
+        unique_items = items
+        # unique_items = remove_duplicates_from_items(items)
     
         result = loads(dumps(unique_items))
 
@@ -371,8 +434,7 @@ def get_items(init_date: str = None, end_date: str = None) -> list:
 @database_connector
 def get_our_items() -> list:
     result = OurItem.objects().all()
-    return result
-    
+    return result 
 
 @database_connector
 def get_our_items_with_linked() -> list:
@@ -408,7 +470,7 @@ def get_our_items_with_linked() -> list:
                     "$unwind": 
                     { 
                         "path": "$site" 
-                        } 
+                    } 
                 },
             ],
             "as": "linked_items"
@@ -420,6 +482,8 @@ def get_our_items_with_linked() -> list:
             "name": 1,
             "item_link": 1,
             "last_price": 1,
+            "disable_parsing":1,
+            "category":1,
             "linked_items._id":1,
             "linked_items.name": 1,
             "linked_items.last_price": 1,
@@ -440,6 +504,23 @@ def get_our_items_with_linked() -> list:
             linked_item["site"]['_id'] = {"$oid":linked_item["site"]['_id'].__str__()}
         result.append(item)
     return result
+
+@database_connector
+def update_our_item(entry: dict ) -> dict:
+    target_item = OurItem.objects(id=entry["_id"]["$oid"])
+    if target_item.count() > 0:
+        update_dict = {}
+        for key in entry:
+            if key not in ["_id", "site"]:
+                # if type(entry[key]) is dict and "_id" in entry[key]:
+                #     update_dict[f"set__{key}"] = ObjectId(entry[key]["_id"]["$oid"]) 
+                if type(entry[key]) is list:
+                    update_dict[f"set__{key}"] = list(map(lambda el : ObjectId(el), entry[key])) 
+                else:
+                    update_dict[f"set__{key}"] = entry[key]
+        # print(update_dict)
+        target_item.update(**update_dict)
+    return {}
 
 
 @database_connector
@@ -499,7 +580,6 @@ def get_one_item(item_id: str = None, init_date: str = None, end_date: str = Non
 
 @database_connector
 def delete_item(item_id: str):
-
     #pipeline to copy selected item to dump collection
     pipeline = [
         {
@@ -524,34 +604,6 @@ def delete_item(item_id: str):
     to_delete.delete()
     return f"deleted item with id {item_id}"
 
-
-@database_connector
-def delete_site(site_id: str):
-
-    #pipeline to copy selected site to dump collection
-    pipeline = [
-        {
-            u"$match": {
-                u"_id": ObjectId(f"{site_id}")
-            }
-        }, 
-        {
-            u"$merge": {
-                u"into": u"dump_site"
-            }
-        }
-    ]
-
-    Site.objects().aggregate(pipeline)
-
-    #saving selected site to check if we already deleted it
-    to_delete = Site.objects(id = ObjectId(f"{site_id}"))
-    
-    if len(to_delete) == 0:
-        return f"ERROR: site with id {site_id} doesn't exist"
-    
-    to_delete.delete()
-    return f"deleted site with id {site_id}"
 
 
 @database_connector

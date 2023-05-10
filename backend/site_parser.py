@@ -3,9 +3,10 @@ import parse_funcs
 from models import *
 import time
 from errors import ErrorHandler
+import os
 
 
-OUR_URL = "https://www.xn--38-vlcai5ag2d.xn--p1ai"
+OUR_URL = os.environ.get('OUR_URL') 
 
 @ErrorHandler
 def parse_enemy_site(item:dict, site: Site):
@@ -26,17 +27,9 @@ def parse_sites():
     items = mongo.get_items()
     for item in items:
         target_site = [site for site in sites if site.pk.__str__() == item["site"]["_id"]["$oid"]]
-        # print(type(target_site))
         if len(target_site) == 1:
             target_site = target_site[0]
             parse_enemy_site(item, target_site)
-            # quantity, price = -1, -1
-            # if target_site.driver_type == DriverType.REGULAR:
-            #     quantity, price = parse_funcs.parse_regular(item, target_site)
-            # else:
-            #     quantity, price = parse_funcs.parse_selenium(item, target_site)
-            # parse_data = ParseData(quantity=quantity, price=price)
-            # mongo.add_data_to_item(item["_id"]["$oid"], parse_data)
 
 
 # parse_sites()
@@ -59,8 +52,6 @@ def update_our_items():
         for item in our_items[init:end]:
             if item["disable_parsing"] == False:
                 parse_our_site(item, our_site)
-            # update_dict = parse_funcs.parse_ours(item, our_site)
-            # mongo.update_our_item(update_dict)
         time.sleep(60)
     
 # parse_sites()

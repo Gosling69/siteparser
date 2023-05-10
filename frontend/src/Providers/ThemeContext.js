@@ -1,6 +1,6 @@
 import { useEffect, createContext, useState } from "react";
-import ApiService from "./Api/api";
 import io from 'socket.io-client'
+import ApiService from "../Api/api";
 
 export const ThemeContext = createContext({})
 

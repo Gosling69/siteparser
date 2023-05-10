@@ -36,13 +36,14 @@ bot = telebot.TeleBot(API_KEY, threaded=False)
 #         bot.send_message(message.chat.id, 'Access denied')
 
 def send_message_to_group(msg):
+    return
     bot.send_message(chat_id=GROUP_ID, text=msg)
 
 def send_message(msg):
     bot.send_message(chat_id=USER_ID, text=msg)
 
-t = threading.Thread(target=bot.infinity_polling, daemon=True)
-t.start()  # start the bot in a thread instead
+# t = threading.Thread(target=bot.infinity_polling, daemon=True)
+# t.start()  # start the bot in a thread instead
 
 
 # bot.polling()

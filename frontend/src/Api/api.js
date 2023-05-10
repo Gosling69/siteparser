@@ -1,9 +1,9 @@
 import axios from "axios"
 import * as _ from 'lodash';
-
+import { includes } from "lodash";
 export default class ApiService {
 
-    static endpoint = "http://localhost:5000"
+    static endpoint = process.env.REACT_APP_BACKEND_ADDRESS;
     // static endpoint = "http://90.189.205.102:5000"
     // static endpoint = "http://192.168.88.3:5000"
 
@@ -17,7 +17,12 @@ export default class ApiService {
         if (item._id) {
             delete item._id
         }
-        
+        if(item.category) {
+            let catVals = item.category.values ?? {}
+            for (let prop in catVals ) {
+                if (!item.category.properties.includes(prop) ||  _.isEmpty(item.category.values[prop])) delete catVals[prop]
+            }
+        }
         console.log(item)
         let response = await axios.post(ApiService.endpoint + "/add_item", {item:item})
         return response.status
@@ -27,6 +32,14 @@ export default class ApiService {
         return response.data
     }
     static async updateItem(item) {
+        // console.log(item)
+        if(item.category) {
+            let catVals = item.category.values ?? {}
+            for (let prop in catVals ) {
+                if (!item.category.properties.includes(prop) ||  _.isEmpty(item.category.values[prop])) delete catVals[prop]
+            }
+        }
+        // console.log(item)
         let response = await axios.put(ApiService.endpoint + "/update_item", {item:item})
         return response.status
     }
@@ -48,12 +61,18 @@ export default class ApiService {
     }
     static async updateOurItem(item) {
         // let propsToClear = ["last_price",""]
-        delete item.last_price
+        // delete item.last_price
         if(item.linked_items_ids) {
             item.linked_items = _.clone(item.linked_items_ids)
             delete item.linked_items_ids
         }
-        console.log(item)
+        if(item.category) {
+            let catVals = item.category.values ?? {}
+            for (let prop in catVals ) {
+                if (!item.category.properties.includes(prop) ||  _.isEmpty(item.category.values[prop])) delete catVals[prop]
+            }
+        }
+        // console.log(item)
         let response = await axios.put(ApiService.endpoint + "/update_our_item", {ouritem:item})
         return response.status
     }
@@ -64,6 +83,12 @@ export default class ApiService {
         for (let prop in item) {
             if ( _.isEmpty(item[prop])) {
                 delete item[prop]
+            }
+        }
+        if(item.category) {
+            let catVals = item.category.values ?? {}
+            for (let prop in catVals ) {
+                if (!item.category.properties.includes(prop) ||  _.isEmpty(item.category.values[prop])) delete catVals[prop]
             }
         }
         if(item.linked_items_ids) {
@@ -106,6 +131,33 @@ export default class ApiService {
     // ERRORS
     static async getErrors(){
         let response = await axios.get(ApiService.endpoint + "/get_errors")
+        return response.data
+    }
+
+    //CATEGORIES
+    static async getCategories(){
+        let response = await axios.get(ApiService.endpoint + "/get_categories")
+        return response.data
+    }
+    static async updateCategory(category) {
+        console.log(category)
+        let response = await axios.put(ApiService.endpoint + "/update_category", {category:category})
+        return response.status
+    }
+    static async addCategory(category) {
+        if (category._id) {
+            delete category._id
+        }
+        for (let prop in category) {
+            if ( _.isEmpty(category[prop])) {
+                delete category[prop]
+            }
+        }
+        let response = await axios.post(ApiService.endpoint + "/add_category", {category:category})
+        return response.status
+    }
+    static async deleteCategory(id) {
+        let response = await axios.delete(ApiService.endpoint + `/delete_category/${id}`)
         return response.data
     }
 

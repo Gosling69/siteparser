@@ -1,23 +1,24 @@
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
+import { Button } from 'react-bootstrap';
 import { useLocation } from 'react-router-dom';
 import { useContext } from 'react';
-import { ThemeContext } from '../../ThemeContext';
+import FilterPanel from '../FilterPanel/FilterPanel';
+import { useState } from 'react';
 
-const NavBar = (props) => {
+
+const NavBar = ({categories}) => {
     
-    const context = useContext(ThemeContext)
-    const hohol = context.isHohol
-
+    // const hohol = context.isHohol
+    const [showFilter, setShowFilter] = useState(false)
+    // const [categories, setCategories] = useState([])
     const whereabouts = useLocation().pathname
     const style = () => {
         return {
            "textDecoration": "underline",
            "textUnderlineOffset": "5px",
            "textDecorationColor": "#F3D223",
-
-
         }
     }
 
@@ -63,8 +64,13 @@ const NavBar = (props) => {
                             {name}
                         </Nav.Link>
                     )}
+                    <Button onClick={() => setShowFilter(true)}>Filter</Button>
+                    <FilterPanel show={showFilter} handleClose={() => setShowFilter(false)} categories={categories}/>
                 </Nav>
         </Navbar>
     )
 }
 export default NavBar
+NavBar.defaultProps = {
+    showFilter: () => console.log("SHOW")
+}
