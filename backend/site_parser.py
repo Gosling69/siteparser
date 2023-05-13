@@ -50,8 +50,8 @@ def update_our_items():
 
     for [init,end] in indexes:
         for item in our_items[init:end]:
-            if item["disable_parsing"] == False:
-                parse_our_site(item, our_site)
+            # if item["disable_parsing"] == False:
+            parse_our_site(item, our_site)
         time.sleep(60)
     
 # parse_sites()

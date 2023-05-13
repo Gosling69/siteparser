@@ -11,43 +11,18 @@ import {
 import AdminPage from './Pages/Admin';
 import PriceCompare from './Pages/PriceCompare';
 import QuantityCompare from './Pages/QuantityCompare';
-
+import PriceCompareTableView from './Pages/PriceCompareTableView';
 
 function App() {
 
 
-  // const hoholTheme = useContext(ThemeContext)
-  // const isHohol = hoholTheme.isHoholTheme
-  // const navigate = useNavigate();
-  // const goToHohol = useCallback(() => navigate('/hohol', {replace: true}), [navigate]);
-  // const probability = (n) => {
-  //   let randNum = Math.random()
-  //   console.log(randNum)
-  //   return randNum < n
-  // }
-
-  // const hoholListener = () => {
-  //   if(probability(0.1)) {
-  //     goToHohol()
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   window.addEventListener("click", hoholListener)
-  // },[])
-
-
   return (
-    // <BrowserRouter> 
-      // <ThemeContext.Consumer>
       <Routes>
           <Route path="/" element={<QuantityCompare />}/>
           <Route path="/price_compare" element={<PriceCompare />}/>
           <Route path="/admin" element={<AdminPage />}/>
-          {/* <Route path="/hohol" element={<Hohol />}/> */}
+          <Route path="/price_compare_table" element={<PriceCompareTableView />}/>
       </Routes>
-      //</ThemeContext.Consumer> 
-    // </BrowserRouter> 
   );
 }
 

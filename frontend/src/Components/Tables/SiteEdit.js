@@ -10,13 +10,9 @@ import DataGrid, {
   import CommonToolbar from "../Toolbars/CommonToolbar";
   
 
-const SiteEdit = (props) => {
+const SiteEdit = ({sites, refresh}) => {
 
-    const [sites, setSites] = useState(props.sites)
-    useEffect(() =>{
-        // console.log(props.sites)
-        setSites(props.sites)
-    },[props.sites])
+
     let gridRef = useRef(null);
 
     const notesEditorOptions = { height: 100 };
@@ -26,7 +22,7 @@ const SiteEdit = (props) => {
         <CommonToolbar
             addRow={() => gridRef.instance.addRow()}
             type="site"
-            refresh={props.refresh}
+            refresh={refresh}
             importFromXlsx={() => window.alert("Рано")}
         />
         <DataGrid

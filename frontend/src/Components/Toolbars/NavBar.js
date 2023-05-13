@@ -1,18 +1,16 @@
-import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-import { Button } from 'react-bootstrap';
+// import { Button } from 'react-bootstrap';
+import { Button } from 'devextreme-react';
 import { useLocation } from 'react-router-dom';
-import { useContext } from 'react';
 import FilterPanel from '../FilterPanel/FilterPanel';
 import { useState } from 'react';
+import UilBars from '@iconscout/react-unicons/icons/uil-bars'
 
 
 const NavBar = ({categories}) => {
     
-    // const hohol = context.isHohol
     const [showFilter, setShowFilter] = useState(false)
-    // const [categories, setCategories] = useState([])
     const whereabouts = useLocation().pathname
     const style = () => {
         return {
@@ -22,10 +20,10 @@ const NavBar = ({categories}) => {
         }
     }
 
-    
     const linkNamesMap = {
         "/admin":"Admin",
         "/price_compare":"Price",
+        "/price_compare_table":"Price (Table)",
         "/":"Quantity",
     }
     return(
@@ -45,7 +43,6 @@ const NavBar = ({categories}) => {
                     }}
                 >
                     ШТАБЕЛЬ
-                    {/* {String(hohol)} */}
                 </div>
                 <Nav
                     style={{
@@ -64,7 +61,14 @@ const NavBar = ({categories}) => {
                             {name}
                         </Nav.Link>
                     )}
-                    <Button onClick={() => setShowFilter(true)}>Filter</Button>
+                    <Nav.Link>
+                    <UilBars
+                        className="clickIcon"
+                        style={{marginRight:"10px"}}
+                        size="24" 
+                        onClick={() => setShowFilter(true)}
+                    />
+                    </Nav.Link>
                     <FilterPanel show={showFilter} handleClose={() => setShowFilter(false)} categories={categories}/>
                 </Nav>
         </Navbar>

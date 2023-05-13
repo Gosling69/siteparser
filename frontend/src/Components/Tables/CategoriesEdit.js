@@ -15,9 +15,7 @@ import DataGrid, {
     Button,
 
   } from 'devextreme-react/data-grid';
-const CategoriesTable = (props) => {
-
-    const [categories,setCategories] = useState(props.categories)
+const CategoriesTable = ({categories, refresh}) => {
 
     const cellTemplate =(container, options) => {
         const noBreakSpace = '\u00A0';
@@ -30,17 +28,13 @@ const CategoriesTable = (props) => {
 
     let gridRef = useRef(null);
 
-    useEffect(() =>{
-        setCategories(props.categories)
-    },[props.categories])
-    
    
     return (
         <>
         <CommonToolbar
             addRow={() => gridRef.instance.addRow()}
             importFromXlsx={ApiService.importItems}
-            refresh={props.refresh}
+            refresh={refresh}
             type="category"
         />
         <DataGrid
@@ -53,9 +47,9 @@ const CategoriesTable = (props) => {
             rowAlternationEnabled={true}
             height={550}
             ref={(ref) => { gridRef = ref}}
-            onRowUpdated={(e) => ApiService.updateCategory(e.data).then(() => props.refresh())}
-            onRowRemoved={(e) => ApiService.deleteCategory(e.key.$oid).then((res) =>{window.alert(res);props.refresh()})}
-            onRowInserted={(e) => ApiService.addCategory(e.data).then(() => props.refresh())}
+            onRowUpdated={(e) => ApiService.updateCategory(e.data).then(() => refresh())}
+            onRowRemoved={(e) => ApiService.deleteCategory(e.key.$oid).then((res) =>{window.alert(res);refresh()})}
+            onRowInserted={(e) => ApiService.addCategory(e.data).then(() => refresh())}
         >
         <Editing
             mode="popup"
@@ -63,13 +57,11 @@ const CategoriesTable = (props) => {
             // allowDeleting={true}
             // useIcons={true}
         >
-        <Popup title="Item Info" showTitle={true} width={700} height={300} />
+        <Popup title="Item Info" showTitle={true} width={700} height={400} />
         <Form>
             <Item itemType="group" colCount={1} colSpan={2}>
                     <Item dataField="name" />
                     <Item dataField="properties" />
-
-                    {/* <Item dataField="item_link" /> */}
             </Item>
         </Form>
         </Editing>

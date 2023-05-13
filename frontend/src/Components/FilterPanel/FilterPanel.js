@@ -9,13 +9,12 @@ import { useCategoryOptions } from "../../Providers/CategoryOptionsProvider";
 const FilterPanel = ({show, handleClose, categories}) => {
 
     function FilterInput({entry,prop}) {
-        const [text, setText] = useState(entry.category.values?.[prop] ?? "")
         const dispatch = useFilterDispatch();    
         const categoryOptions = useCategoryOptions() 
-        const options = Array.from(categoryOptions[entry.category.name][prop])
+        const options = Array.from(categoryOptions[entry.category.name]?.[prop] ?? [])
         return (
             <FormSelect 
-                defaultValue={text}
+                defaultValue={entry.category.values?.[prop] ?? ""}
                 onChange={(e) => {
                     // if (!e.target.value) return
                     dispatch({
@@ -36,30 +35,6 @@ const FilterPanel = ({show, handleClose, categories}) => {
                 )
             }
             </FormSelect>
-            // <SelectBox
-            //     // className='mb-3'
-            //     items={categoryOptions[entry.category.name]}
-            //     displayExpr="name"
-            //     valueExpr="_id.$oid"
-            //     onValueChanged={(e) => setCategoryId(e.value)}
-            // />
-            // <FormControl 
-            //     // type="email" 
-            //     placeholder={`${prop}...`}
-            //     key={prop}
-            //     defaultValue={text}
-                // onChange={(e) => {
-                //     dispatch({
-                //         type: 'changed',
-                //         id: entry.id,
-                //         category: {
-                //         ...entry.category,
-                //         values: {...entry.category.values, [prop]:e.target.value} 
-                //         }
-                //     })
-                // }}
-               
-            // />
         )
     }
 
@@ -115,7 +90,7 @@ const FilterPanel = ({show, handleClose, categories}) => {
                 </Col>
             <Col>
             <SelectBox
-                // className='mb-3'
+                className='mb-3'
                 items={categories}
                 displayExpr="name"
                 valueExpr="_id.$oid"
@@ -125,7 +100,6 @@ const FilterPanel = ({show, handleClose, categories}) => {
             </Row>
         );
     }
-    
 
     return (
         <>

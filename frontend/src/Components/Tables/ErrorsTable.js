@@ -4,7 +4,7 @@ import DateToolbar from '../Toolbars/DateToolbar';
 import {Row, Col} from "react-bootstrap"
 import MultiValueCell from '../CellRenders/MultiValueCell';
 
-const ErrorsTable = (props) => {
+const ErrorsTable = ({errors}) => {
     const[endDate, setEndDate] = useState(new Date().toISOString().slice(0,10))
     const [initDate, setInitDate] = useState(new Date(Date.now() - 86400000).toISOString().slice(0,10))
 
@@ -48,7 +48,7 @@ const ErrorsTable = (props) => {
             <Col></Col>
         </Row>
         <DataGrid
-            dataSource={props.errors}
+            dataSource={errors}
             keyExpr="_id"
             showColumnLines={false}
             allowColumnResizing={true}

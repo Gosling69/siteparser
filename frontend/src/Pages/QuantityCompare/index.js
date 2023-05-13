@@ -14,36 +14,29 @@ import ChartCell from '../../Components/CellRenders/ChartCell';
 import LinkCell from '../../Components/CellRenders/LinkCell';
 import NavBar from '../../Components/Toolbars/NavBar';
 import DateToolbar from '../../Components/Toolbars/DateToolbar';
+import { calculateDeltasForQunatity } from '../../helpers/processDataFuncs';
+import useFetch from '../../hooks/useFetch';
+import useFilteredData from '../../hooks/useFilteredData';
+
 const QuantityCompare = (props) => {
 
-    const [items, setItems] = useState([])
     const[endDate, setEndDate] = useState(new Date().toISOString().slice(0,10))
     const [initDate, setInitDate] = useState(new Date(Date.now() - 86400000).toISOString().slice(0,10))
+    
+    const {
+        data:items, 
+        error:itemsError, 
+        loading:itemsLoading, 
+        refetch:refreshItems
+    } = useFetch("/get_items", "GET", {init_date:initDate, end_date:endDate}, true, calculateDeltasForQunatity)
 
+    const {
+        data:categories, 
+        error:categoriesError, 
+        loading:categoriesLoading, 
+        refetch:refreshCategories
+    } = useFetch("/get_categories", "GET", {}, true)
 
-
-    const refresh = () => {
-        ApiService.getItems({init_date:initDate, end_date:endDate})
-        .then((res) =>{
-            console.log(res)
-            setItems(
-                    res.map(item => 
-                    {
-                        let plusByPeriod = 0, minusByPeriod = 0
-                        for (let i = 1; i < item.data.length; i++) {
-                            if(item.data[i].quantity > item.data[i-1].quantity) {
-                                plusByPeriod += item.data[i].quantity - item.data[i-1].quantity
-                            } else if (item.data[i].quantity < item.data[i-1].quantity) {
-                                minusByPeriod += item.data[i-1].quantity - item.data[i].quantity
-                            }
-                        }
-                        item.plusByPeriod = plusByPeriod
-                        item.minusByPeriod = minusByPeriod
-                        return item
-                    })
-            )
-        })
-    }
 
     const setWeek = () => {
         let endDate = new Date()
@@ -68,12 +61,12 @@ const QuantityCompare = (props) => {
     }
 
     useEffect(() => {
-        refresh()
+        refreshItems()
     },[initDate, endDate])
     
     return(
         <>
-        <NavBar/>
+        <NavBar categories={categories}/>
         <Row className="mt-3 mb-3">
             <Col></Col>
             <Col>
@@ -89,10 +82,9 @@ const QuantityCompare = (props) => {
             </Col>
             <Col></Col>
         </Row>
-        
             <DataGrid 
                 id="grid-container"
-                dataSource={items}
+                dataSource={useFilteredData(items)}
                 keyExpr="_id"
                 showColumnLines={false}
                 showRowLines={false}
@@ -105,7 +97,6 @@ const QuantityCompare = (props) => {
             <Column dataField="site.name" cellRender={data => <LinkCell data={data}/>} />
             <Column dataField="plusByPeriod" alignment={"center"} width={300} caption="Plus By Period" />
             <Column dataField="minusByPeriod" alignment={"center"} width={300} caption="Minus By Period" />
-
             </DataGrid>
         </>
     )

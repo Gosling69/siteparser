@@ -1,5 +1,4 @@
 import { useEffect, useState, useContext } from "react"
-import ApiService from "../../Api/api"
 import {Row, Col, Form, Button, Nav, InputGroup, Dropdown, DropdownButton, Offcanvas, Tab, Tabs } from "react-bootstrap"
 import ItemEdit from "../../Components/Tables/ItemEdit"
 import OurItemEdit from "../../Components/Tables/OurItemEdit"
@@ -9,70 +8,45 @@ import ErrorsTable from "../../Components/Tables/ErrorsTable"
 import CategoriesTable from "../../Components/Tables/CategoriesEdit"
 import useFilteredData from "../../hooks/useFilteredData"
 import useFetch from "../../hooks/useFetch"
-import { useCategoryOptions } from "../../Providers/CategoryOptionsProvider"
+import { isArray } from "lodash"
+import { addlinkedItemsIds } from "../../helpers/processDataFuncs"
 
 const AdminPage = (props) => {
 
-    const[items, setItems] = useState([])
-    const[ourItems, setOurItems] = useState([])
-    const [sites, setSites] = useState([])
-    const [errors, setErrors] = useState([])
-    const [categories, setCategories] = useState([])
     const [activeTab, setActiveTab] = useState("Items")
-    
-    const {test, error, loading, refetch} = useFetch("http://localhost:5000/get_items", "GET", {}, true)
-    // const filters = useFilters()
-    
 
-    // useEffect(() => {
-    //     console.log("USPEH",filters)
-    // },[filters])
 
-    const refreshItems = () => {
-        ApiService.getItems()
-        .then((res) =>{
-            console.log(res)
-            setItems(res)
-        }) 
-    }
-    const refreshOurItems = () => {
-        ApiService.getOurItems()
-        .then((res) =>{
-            console.log(res)
-            setOurItems(res.map(el => {
-                el.linked_items_ids = el.linked_items.map(item => item._id.$oid) 
-                return el
-            }))
-        }) 
-    }
-    const refreshSites = () => {
-        ApiService.getSites()
-        .then((res) => {
-            setSites(res)
-        })
-    }
-    const refreshErrors = () => {
-        ApiService.getErrors()
-        .then((res) => {
-            console.log(res)
-            setErrors(res)
-        })
-    }
-    const refreshCategories = () => {
-        ApiService.getCategories()
-        .then((res) => {
-            console.log(res)
-            setCategories(res)
-        })
-    }
-    useEffect(() =>{
-        refreshItems()
-        refreshOurItems()
-        refreshSites()
-        refreshErrors()
-        refreshCategories()
-        refetch()
-    },[])
+    const {
+        data:items, 
+        error:itemsError, 
+        loading:itemsLoading, 
+        refetch:refreshItems
+    } = useFetch("/get_items", "GET", {}, true)
+    const {
+        data:ourItems, 
+        error:ourItemsError, 
+        loading:ourItemsLoading, 
+        refetch:refreshOurItems
+    } = useFetch("/get_our_items", "GET", {}, true, addlinkedItemsIds)
+    const {
+        data:sites, 
+        error:sitesError, 
+        loading:sitesLoading, 
+        refetch:refreshSites
+    } = useFetch("/get_sites", "GET", {}, true)
+    const {
+        data:errors, 
+        error:errorsError, 
+        loading:errorsLoading, 
+        refetch:refreshErrors
+    } = useFetch("/get_errors", "GET", {}, true)
+    const {
+        data:categories, 
+        error:categoriesError, 
+        loading:categoriesLoading, 
+        refetch:refreshCategories
+    } = useFetch("/get_categories", "GET", {}, true)
+
 
     const ButtonStyle= (item) =>{
         return{
@@ -128,12 +102,10 @@ const AdminPage = (props) => {
                 </Col>
                 <Col style={{"paddingLeft":"50px", "paddingRight":"0"}} xs={1}>
                     {["Items","Our Items","Sites", "Errors", "Categories"].map((el,index) =>
-                        <Row className={index === 0 ? "mb-3 mt-5":" mb-3"}>
+                        <Row key={index} className={index === 0 ? "mb-3 mt-5":" mb-3"}>
                         <Button
-                            // variant='secondary'
                             style={ButtonStyle(el)}
                             onClick={() => setActiveTab(el)}
-                            // active={activeTab === el}
                         >
                             {el}
                         </Button>

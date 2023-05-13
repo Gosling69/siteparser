@@ -391,6 +391,7 @@ def get_items(init_date: str = None, end_date: str = None) -> list:
                 u"_id": 1,
                 u"name": u"$name",
                 u"item_link": u"$item_link",
+                u"category": u"$category",
                 u"site": u"$site",
                 u"data": {
                     u"$filter": {
@@ -432,7 +433,7 @@ def get_items(init_date: str = None, end_date: str = None) -> list:
 
 
 @database_connector
-def get_our_items() -> list:
+def get_our_items() -> list[OurItem]:
     result = OurItem.objects().all()
     return result 
 

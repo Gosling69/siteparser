@@ -21,32 +21,16 @@ import CategoryCell from "../CellRenders/CategoryCell";
 import CategoryValuesCell from "../CellRenders/CategoryValuesCell";
 
 
-const ItemEdit = (props) => {
-
-    const [items,setItems] = useState(props.items)
-    const [sites, setSites] = useState(props.sites)
-    const [categories, setCategories] = useState(props.categories)
+const ItemEdit = ({items, sites, categories, refresh}) => {
 
     let gridRef = useRef(null);
-
-    useEffect(() =>{
-        setItems(props.items)
-    },[props.items])
-
-    useEffect(() =>{
-        setSites(props.sites)
-    },[props.sites])
-    
-    useEffect(() =>{
-        setCategories(props.categories)
-    },[props.categories])
 
     return(
         <>
         <CommonToolbar
             addRow={() => gridRef.instance.addRow()}
             importFromXlsx={ApiService.importItems}
-            refresh={props.refresh}
+            refresh={refresh}
             type="item"
         />
         <DataGrid
@@ -63,20 +47,20 @@ const ItemEdit = (props) => {
             onRowUpdated={(e) => {
                 ApiService.updateItem(e.data)
                 .then(() => {
-                    props.refresh()
+                    refresh()
                 })
             }}
             onRowRemoved={(e) => {
                 ApiService.deleteItem(e.key.$oid)
                 .then((res) =>{ 
                     window.alert(res);
-                    props.refresh() 
+                    refresh() 
                 })
             }}
             onRowInserted={(e) => {
                 ApiService.addItem(e.data)
                 .then(() => {
-                    props.refresh()
+                    refresh()
                 })
             }}
         >
@@ -118,7 +102,6 @@ const ItemEdit = (props) => {
             caption="Category Props"
             cellRender={data => <CategoryValuesCell {...data}/>}
             allowEditing={true}
-            // editCellComponent={CategoryPropsEdit}
         >
         </Column>
         <Column dataField="item_link" width={350} >

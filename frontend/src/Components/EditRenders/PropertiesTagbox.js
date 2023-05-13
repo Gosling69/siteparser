@@ -80,29 +80,6 @@ const PropertiesTagbox = (props) => {
         </Row>
         
         </>
-
-        // {properties.map(prop =>
-        //     <Col>
-        //         <TextBox  placeholder="Enter full name here..." />
-        //     </Col>
-        // )}
-    //   <TagBox
-    //       dataSource={
-    //           props.data.column.lookup.dataSource
-    //           // .filter(el => !props.data.value.includes(el))
-    //       }
-    //       defaultValue={props.data.value}
-    //       // value={value}
-    //       valueExpr="_id.$oid"
-    //       displayExpr={(item) => `${item.name} (${item.site.name})`}
-    //       showSelectionControls={true}
-    //       maxDisplayedTags={5}
-    //       // showMultiTagOnly={false}
-    //       applyValueMode="useButtons"
-    //       searchEnabled={true}
-    //       onValueChanged={onValueChanged}
-    //       onSelectionChanged={onSelectionChanged} 
-    //   />
     )
 }
 export default PropertiesTagbox

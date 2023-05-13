@@ -1,17 +1,16 @@
+import { isArray } from 'lodash';
 import { useState, useEffect } from 'react';
 import {useFilters} from "../Providers/FilterProvider"
 
 function useFilteredData(value) {
-    // const dispatch = useFilterDispatch();      
     const filters = useFilters();
     const categories = filters.map(el => el.category)
-    // console.log("TUTA",categories)
-    // console.log(categories.length)
     const [filteredData, setFilteredData] = useState(value);
 
     useEffect(() => {
         // console.log("IN EFFECT")
         // console.log(categories)
+        if (!isArray(value)) return
         setFilteredData(
             value.filter(entry => {
                 if(!categories.length) return true
@@ -20,7 +19,7 @@ function useFilteredData(value) {
                     let values = targetCategory.values
                     for (let prop in values ) {
                         if(!values[prop]) continue
-                        if(entry.category?.values?.[prop] != values[prop]) {
+                        if(entry.category?.values?.[prop] !== values[prop]) {
                             return false
                         }
                     }

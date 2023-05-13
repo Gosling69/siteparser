@@ -14,43 +14,66 @@ from event_provider import *
 app = Flask(__name__)
 CORS(app)
 socketio = SocketIO(app, cors_allowed_origins="*")
-scheduler = APScheduler()
-is_job_running = EventProvider()
-is_job_running.attach(socketio)
-# hohol.attach(socketio)
+scheduler = APScheduler()   
+is_update_running = EventProvider("isupdating")
+is_update_running.attach(socketio)
+is_our_update_running = EventProvider("isupdatingours")
+is_our_update_running.attach(socketio)
 
-def scheduleDecorator(func):
+def notifyUpdateDecorator(func):
     def InnerFunc(*args, **kwargs):
-        is_job_running.set_status(True)
-        is_job_running.notify_updating(is_job_running.status)
+        is_update_running.set_status(True)
+        is_update_running.notify_updating(is_update_running.status)
         func(*args, **kwargs)
-        is_job_running.set_status(False)
-        is_job_running.notify_updating(is_job_running.status)
+        is_update_running.set_status(False)
+        is_update_running.notify_updating(is_update_running.status)
+    return InnerFunc
+
+def notifyOursUpdateDecorator(func):
+    def InnerFunc(*args, **kwargs):
+        is_our_update_running.set_status(True)
+        is_our_update_running.notify_updating(is_our_update_running.status)
+        func(*args, **kwargs)
+        is_our_update_running.set_status(False)
+        is_our_update_running.notify_updating(is_our_update_running.status)
     return InnerFunc
 
 def listener(event):
-    is_job_running.set_status(False)
+    is_update_running.set_status(False)
     print(f'Job {event.job_id} raised {event.exception.__class__.__name__}')
 
-@scheduleDecorator
+@notifyUpdateDecorator
 def scheduleTask():
     site_parser.parse_sites()
-    # site_parser.update_our_items()
+
+@notifyOursUpdateDecorator
+def updateOurs():
+    site_parser.update_our_items()
 
 scheduler.add_listener(listener, EVENT_JOB_EXECUTED | EVENT_JOB_MISSED | EVENT_JOB_ERROR)
 scheduler.add_job(id = 'Scheduled Task', func=scheduleTask, trigger="interval", hours=3, max_instances=1)
 scheduler.start()
 
+
+
 @socketio.on('connect')
 def ws_connect():
     print("CONNECTED")
-    # emit("hohol", hohol.status)
-    emit("isupdating", is_job_running.status)
+    emit("isupdatingours", is_our_update_running.status)
+    emit("isupdating", is_update_running.status)
 
 @app.route('/run_update', methods=['POST'])
-def run_update():
-    if not is_job_running.status:
+def run_update():   
+    if not is_update_running.status:
         scheduler.get_job(id ="Scheduled Task").modify(next_run_time=datetime.datetime.now())
+        return "OK"
+    else:
+        return "Already running"
+
+@app.route('/run_update_ours', methods=['POST'])
+def run_update_ours():
+    if not is_our_update_running.status:
+        updateOurs()
         return "OK"
     else:
         return "Already running"

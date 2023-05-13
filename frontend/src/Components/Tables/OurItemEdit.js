@@ -18,7 +18,7 @@ import CategoriesSelect from "../EditRenders/CategoriesSelect";
 import CategoryCell from "../CellRenders/CategoryCell";
 import CategoryValuesCell from "../CellRenders/CategoryValuesCell";
 
-const OurItemEdit = (props) => {
+const OurItemEdit = ({ourItems, items, categories, refresh}) => {
 
     const cellTemplate =(container, options) => {
         const noBreakSpace = '\u00A0';
@@ -29,26 +29,15 @@ const OurItemEdit = (props) => {
         container.title = text;
     }
 
-    const [ourItems,setOurItems] = useState(props.ourItems)
-    const [categories, setCategories] = useState(props.categories)
-
-    // const [sites, setSites] = useState(props.sites)
     let gridRef = useRef(null);
 
-    useEffect(() =>{
-        setOurItems(props.ourItems)
-    },[props.ourItems])
-
-    useEffect(() =>{
-        setCategories(props.categories)
-    },[props.categories])
 
     return(
         <>
         <CommonToolbar
             addRow={() => gridRef.instance.addRow()}
             importFromXlsx={ApiService.importOurItems}
-            refresh={props.refresh}
+            refresh={refresh}
             type="ouritem"
         />
         <DataGrid
@@ -61,9 +50,9 @@ const OurItemEdit = (props) => {
             rowAlternationEnabled={true}
             height={550}
             ref={(ref) => { gridRef = ref}}
-            onRowUpdated={(e) =>  ApiService.updateOurItem(e.data).then(() => props.refresh())}
-            onRowRemoved={(e) => ApiService.deleteOurItem(e.key.$oid).then((res) =>{window.alert(res);props.refresh()})}
-            onRowInserted={(e) => ApiService.addOurItem(e.data).then(() => props.refresh())}
+            onRowUpdated={(e) =>  ApiService.updateOurItem(e.data).then(() => refresh())}
+            onRowRemoved={(e) => ApiService.deleteOurItem(e.key.$oid).then((res) =>{window.alert(res);refresh()})}
+            onRowInserted={(e) => ApiService.addOurItem(e.data).then(() => refresh())}
         >
         <Editing
             mode="popup"
@@ -127,7 +116,7 @@ const OurItemEdit = (props) => {
             // calculateFilterExpression={this.calculateFilterExpression}
         >
             <Lookup
-              dataSource={props.items}
+              dataSource={items}
             //   valueExpr="_id.$oid"
             //   displayExpr="name"
             />

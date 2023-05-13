@@ -5,16 +5,16 @@ import ApiService from "../Api/api";
 export const ThemeContext = createContext({})
 
 const ThemeProvider = ({children}) => {
-    const [isHohol, setIsHohol] = useState(false)
-    const [isUpdating, setIsUpdating] = useState(false)
+    const [isOursUpdating, setIsOursUpdating] = useState(true)
+    const [isUpdating, setIsUpdating] = useState(true)
     const [socket, setSocket] = useState(null)
     
     useEffect(()=>{
         if (socket === null) {
             let sock = io(ApiService.endpoint)
-            sock.on("hohol", (...args) => {
-                console.log("hohol",args)
-                setIsHohol(args[0])
+            sock.on("isupdatingours", (...args) => {
+                console.log("update ours",args)
+                setIsOursUpdating(args[0])
             });
             sock.on("isupdating", (...args) => {
                 console.log("update",args)
@@ -25,7 +25,7 @@ const ThemeProvider = ({children}) => {
     },[])
 
     return(
-        <ThemeContext.Provider value={{isHohol:isHohol, isUpdating:isUpdating}}>
+        <ThemeContext.Provider value={{isOursUpdating:isOursUpdating, isUpdating:isUpdating}}>
             {children}
         </ThemeContext.Provider>
     )

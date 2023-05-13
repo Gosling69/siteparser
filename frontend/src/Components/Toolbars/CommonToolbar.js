@@ -10,13 +10,14 @@ import readXlsxFile from 'read-excel-file'
 import UploadModal from "../Modals/UploadModal"
 import { ThemeContext } from "../../Providers/ThemeContext"
 
-const CommonToolbar = (props) => {
+const CommonToolbar = ({type, refresh,addRow, importFromXlsx}) => {
 
     const [showModal, setShowModal] = useState(false)
     const [uploadData,setUploadData] = useState([])
     const fileInputRef = useRef()
     const context = useContext(ThemeContext)
     const isUpdating = context.isUpdating
+    const isOursUpdating = context.isOursUpdating
 
     const ButtonStyle = {
         backgroundColor:"white",
@@ -32,10 +33,10 @@ const CommonToolbar = (props) => {
 
     const initDefaultSites = async () => {
         await ApiService.initStandartSites()
-        props.refresh()
+        refresh()
     }
 
-    const importFromXlsx = async (event) => {
+    const importFromXlsxLocal = async (event) => {
         let file = event.target.files[0]
         if (!file.name.endsWith(".xlsx")) {
             window.alert("Не экселька")
@@ -60,12 +61,12 @@ const CommonToolbar = (props) => {
 
     const importFunc = async() => {
 
-        // let res = await props.importFromXlsx(uploadData)
-        // await props.refresh()
+        // let res = await importFromXlsx(uploadData)
+        // await refresh()
         // setShowModal(false);
-        props.importFromXlsx(uploadData)
+        importFromXlsx(uploadData)
         .then(async (res) => {
-            await props.refresh()
+            await refresh()
             setShowModal(false);
         })
 
@@ -79,7 +80,7 @@ const CommonToolbar = (props) => {
             setShow={setShowModal}
             data={uploadData}
             clearData={clearData}
-            type={props.type}
+            type={type}
             importFromXlsx={importFunc}
         />
         <Row className="mt-3 mb-3">
@@ -98,8 +99,24 @@ const CommonToolbar = (props) => {
                     />
                 </Button>
             </Col>
+            <Col xs={2}>
+                <Button
+                    style={ButtonStyle}
+                    onClick={ApiService.runUpdateOurs}
+                    disabled={isOursUpdating}
+                >
+                    {isOursUpdating? "Updating (Ours)" :"Run Update (Ours)"}
+                    <UilRefresh
+                        style={IconStyle}
+                        // className="mx-4"
+                        size="25" 
+                        color="#6F7888"
+                    />
+                </Button>
+            </Col>
+            
             <Col className="d-flex justify-content-end">
-                {props.type === "site" ?
+                {type === "site" ?
                     <Button
                         style={ButtonStyle}
                         onClick={() => window.confirm("Выгрузить стандартные сайты?") ? initDefaultSites(): null}
@@ -117,7 +134,7 @@ const CommonToolbar = (props) => {
                         style={ButtonStyle}
                         onClick={() =>fileInputRef.current.click()}
                     >
-                    <input onChange={importFromXlsx} multiple={false} ref={fileInputRef} type='file' hidden/>
+                    <input onChange={importFromXlsxLocal} multiple={false} ref={fileInputRef} type='file' hidden/>
                         Import XLSX
                         <UilExport
                             // className="mx-4"
@@ -131,7 +148,7 @@ const CommonToolbar = (props) => {
             <Col xs={2} className="d-flex justify-content-end" >
                 <Button
                     style={ButtonStyle}
-                    onClick={() =>props.addRow()}
+                    onClick={() =>addRow()}
                 >
                     Add new Item
                     <UilPlus

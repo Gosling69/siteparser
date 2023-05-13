@@ -1,6 +1,7 @@
 import axios from "axios"
 import * as _ from 'lodash';
 import { includes } from "lodash";
+
 export default class ApiService {
 
     static endpoint = process.env.REACT_APP_BACKEND_ADDRESS;
@@ -164,6 +165,11 @@ export default class ApiService {
     //MISC
     static async runUpdate(){
         let response = await axios.post(ApiService.endpoint + "/run_update")
+        // window.alert(response.data)
+        return response
+    }
+    static async runUpdateOurs(){
+        let response = await axios.post(ApiService.endpoint + "/run_update_ours")
         // window.alert(response.data)
         return response
     }
